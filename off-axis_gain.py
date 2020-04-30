@@ -21,7 +21,7 @@ class Root(Tk):
         self.frame_inputs = ttk.LabelFrame(self, text='Входные данные:',
                                            labelanchor="n")
         self.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
-        #   Button for calculation
+        #   Button for calling calculations
         self.button_calculate = ttk.Button(self, text='Рассчитать')
         self.button_calculate.grid(column=0, row=1)
         #   Frame for calculated parameters
