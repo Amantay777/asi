@@ -8,7 +8,7 @@
 # Copyright:   (c) - 2020
 # Licence:     <your licence>
 # -----------------------------------------------------------------------------
-from math import log10, sqrt, pi
+from math import log10, sqrt, pi, sin
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
 
