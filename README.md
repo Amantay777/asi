@@ -1,3 +1,2 @@
 # ASI
-Adjacent satellite interference (ASI) calculator
-Off-axis gain calculator
+Adjacent satellite interference (ASI) calculator: Off-axis gain calculator
