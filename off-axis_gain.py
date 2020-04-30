@@ -8,7 +8,7 @@
 # Copyright:   (c) - 2020
 # Licence:     <your licence>
 # -----------------------------------------------------------------------------
-from math import log10, sqrt, pi,
+from math import log10, sqrt, pi
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
 
@@ -16,7 +16,7 @@ from tkinter import ttk
 class Root(Tk):
     def __init__(self):
         super().__init__()
-        self.title('Расчет внеосевого коэффициента усиления антенны (G)')
+        self.title('Расчет внеосевого коэффициента усиления антенны')
         #   Frame for input data
         self.frame_inputs = ttk.LabelFrame(self, text='Входные данные:',
                                            labelanchor="n")
