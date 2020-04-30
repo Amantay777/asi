@@ -16,7 +16,7 @@ from tkinter import ttk
 class Root(Tk):
     def __init__(self):
         super().__init__()
-        self.title('Расчет внеосевого коэффициента усиления антенны')
+        self.title('Расчет внеосевого коэффициента усиления антенны (G)')
         #   Frame for input data
         self.frame_inputs = ttk.LabelFrame(self, text='Входные данные:',
                                            labelanchor="n")
