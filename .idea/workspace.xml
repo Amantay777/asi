@@ -25,10 +25,7 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f9b7e43-a503-4d11-bf98-092a0af234a1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/offaxis_gain.py" beforeDir="false" afterPath="$PROJECT_DIR$/offaxis_gain.py" afterDir="false" />
-    </list>
+    <list default="true" id="9f9b7e43-a503-4d11-bf98-092a0af234a1" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,7 +76,21 @@
       <option name="project" value="LOCAL" />
       <updated>1588501409279</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="ed">
+      <created>1588501909135</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1588501909135</updated>
+    </task>
+    <task id="LOCAL-00004" summary="ed">
+      <created>1588502201600</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1588502201600</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -151,10 +162,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="366" y="0" width="914" height="680" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1588495373334" />
-    <state x="233" y="74" key="Vcs.Push.Dialog.v2" timestamp="1588501431526">
+    <state x="233" y="74" key="Vcs.Push.Dialog.v2" timestamp="1588502204047">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="233" y="74" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1588501431526" />
+    <state x="233" y="74" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1588502204047" />
     <state x="423" y="54" key="git4idea.branch.GitSmartOperationDialog" timestamp="1588494910993">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
