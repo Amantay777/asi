@@ -740,7 +740,7 @@ class S465(Rec):
                                     25 * log10(self.phi))
                         else:
                             self.g = 10 - 10 * log10(self.dw)
-            elif (self.f < 2):
+            elif self.f < 2:
                 self.g = 'f < 2 ГГц !'
             else:
                 self.g = 'f > 31 ГГц !'
@@ -776,14 +776,14 @@ class S580(S465):
                 self.phi_min = ''
             self.phi_minr = round(self.phi_min, 2) if (type(self.phi_min)
                                                        == float) else (
-                                                       self.phi_min)
+                                                           self.phi_min)
 
         def offaxis_gain(self):
             if self.dw >= 50:
                 if self.phi < self.phi_min:
                     self.g = AP7.Equations(self.inputs).g
                 # внеосевой коэффициент усиления антенны, дБ
-                elif (self.phi_min <= self.phi <= 20):
+                elif self.phi_min <= self.phi <= 20:
                     self.g = 29 - 25 * log10(self.phi)
                     # elif (20 < self.phi <= 26.3):
                     # self.g = -3.5
