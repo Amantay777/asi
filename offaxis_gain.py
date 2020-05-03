@@ -614,7 +614,7 @@ class AP30B(AP30_97):
 
         def offaxis_gain(self):
             super().offaxis_gain()
-            if (self.phi_m <= self.phi <= 19.95):
+            if self.phi_m <= self.phi <= 19.95:
                 self.g = min(self.g1, 29 - 25 * log10(self.phi))
             elif (19.95 < self.phi <= 180):
                 self.g = max(min(- 3.5, 32 - 25 * log10(self.phi)), -10)
