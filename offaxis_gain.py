@@ -348,20 +348,20 @@ class AP8(Rec):
         def offaxis_gain(self):
             if self.phi == 0:
                 self.g = self.gmax
-            elif (0 < self.phi < self.phi_m):
+            elif 0 < self.phi < self.phi_m:
                 self.g = self.gmax - 2.5 * 10**(-3) * (self.dw * self.phi)**2
-            elif (self.phi_m <= self.phi < self.phi_r):
+            elif self.phi_m <= self.phi < self.phi_r:
                 self.g = self.g1
-            elif (self.phi > 180):
+            elif self.phi > 180:
                 self.g = '\u03C6 > 180 !'
             else:
                 if self.dw >= 100:
-                    if (self.phi_r <= self.phi < self.phi_b):
+                    if self.phi_r <= self.phi < self.phi_b:
                         self.g = 32 - 25 * log10(self.phi)
                     else:
                         self.g = - 10
                 else:
-                    if (self.phi_r <= self.phi < self.phi_b):
+                    if self.phi_r <= self.phi < self.phi_b:
                         self.g = (52 - 10*log10(self.dw) - 25*log10(self.phi))
                     else:
                         self.g = 10 - 10 * log10(self.dw)
@@ -391,9 +391,9 @@ class AP7(AP8):
                 self.g = 'D/\u03BB < 35 !'
             else:
                 super().offaxis_gain()
-            if (self.phi_r <= self.phi < self.phi_b):
+            if self.phi_r <= self.phi < self.phi_b:
                 self.g = 29 - 25 * log10(self.phi)
-            elif (self.phi_b <= self.phi <= 180):
+            elif self.phi_b <= self.phi <= 180:
                 self.g = - 10
             super(AP8.Equations, self).offaxis_gain()
 
@@ -549,22 +549,22 @@ class AP30_97(AP8):
         def offaxis_gain(self):
             super().offaxis_gain()
             # Co-polar. off-axis gain
-            if (self.phi_r <= self.phi < self.phi_b):
+            if self.phi_r <= self.phi < self.phi_b:
                 self.g = 29 - 25 * log10(self.phi)
-            elif (self.phi_b <= self.phi < 70):
+            elif self.phi_b <= self.phi < 70:
                 self.g = - 5
-            elif (70 <= self.phi <= 180):
+            elif 70 <= self.phi <= 180:
                 self.g = 0
             super(AP8.Equations, self).offaxis_gain()
             # Cross-polar. off-axis gain
-            if (0 <= self.phi < self.z25phi_0):
+            if 0 <= self.phi < self.z25phi_0:
                 self.gx = self.gmax - 25
-            elif (self.z25phi_0 <= self.phi < self.z44phi_0):
+            elif self.z25phi_0 <= self.phi < self.z44phi_0:
                 self.gx = self.gmax - 25 + 8 * ((self.phi - self.z25phi_0)
                                                 / (0.19 * self.phi_0))
-            elif (self.z44phi_0 <= self.phi < self.phi_0):
+            elif self.z44phi_0 <= self.phi < self.phi_0:
                 self.gx = self.gmax - 17
-            elif (self.phi_0 <= self.phi < self.phi_1):
+            elif self.phi_0 <= self.phi < self.phi_1:
                 self.gx = self.gmax - 17 + self.c * ((self.phi - self.phi_0)
                                                      / (self.phi_1
                                                      - self.phi_0))
