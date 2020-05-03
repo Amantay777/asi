@@ -616,7 +616,7 @@ class AP30B(AP30_97):
             super().offaxis_gain()
             if self.phi_m <= self.phi <= 19.95:
                 self.g = min(self.g1, 29 - 25 * log10(self.phi))
-            elif (19.95 < self.phi <= 180):
+            elif 19.95 < self.phi <= 180:
                 self.g = max(min(- 3.5, 32 - 25 * log10(self.phi)), -10)
             self.gr = round(self.g, 2) if type(self.g) == float else self.g
 
@@ -700,7 +700,7 @@ class S465(Rec):
         def add_params(self):
             super().add_params()
 
-            if (2 <= self.f <= 31):
+            if 2 <= self.f <= 31:
                 if (self.ab or self.dw > 100):
                     if (self.tr or self.dw >= 33.3):
                         if self.dw >= 50:
@@ -712,32 +712,32 @@ class S465(Rec):
                         self.phi_min = 2.5
                 else:
                     self.phi_min = 100 * self.w / self.d
-            elif (self.f < 2):
+            elif self.f < 2:
                 self.phi_min = 'f < 2 ГГц !'
             else:
                 self.phi_min = 'f > 31 ГГц !'
             self.phi_minr = round(self.phi_min, 2) if (type(self.phi_min)
                                                        == float) else (
-                                                       self.phi_min)
+                                                           self.phi_min)
 
         def offaxis_gain(self):
-            if (2 <= self.f <= 31):
-                if (self.phi < self.phi_min):
+            if 2 <= self.f <= 31:
+                if self.phi < self.phi_min:
                     self.g = '\u03C6 < \u03C6_min !'
                 # внеосевой коэффициент усиления антенны, дБ
-                elif (self.phi > 180):
+                elif self.phi > 180:
                     self.g = '\u03C6 > 180 !'
                 else:
                     if (self.ab or self.dw > 100):
-                        if (self.phi_min <= self.phi < 48):
+                        if self.phi_min <= self.phi < 48:
                             self.g = 32 - 25 * log10(self.phi)
                         else:
                             self.g = -10
                     else:
-                        if (self.phi_min <= self.phi < 48):
+                        if self.phi_min <= self.phi < 48:
                             self.g = 52 - 10 * (
-                                     log10(self.dw)) - (
-                                     25 * log10(self.phi))
+                                log10(self.dw)) - (
+                                    25 * log10(self.phi))
                         else:
                             self.g = 10 - 10 * log10(self.dw)
             elif (self.f < 2):
