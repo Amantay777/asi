@@ -16,25 +16,25 @@ from tkinter import ttk
 class Root(Tk):
     def __init__(self):
         super().__init__()
-        self.title('Расчет внеосевого коэффициента усиления антенны')
-        #   Frame for input data
-        self.frame_inputs = ttk.LabelFrame(self, text='Входные данные:',
-                                           labelanchor="n")
-        self.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
-        #   Button for calling calculations
-        self.button_calculate = ttk.Button(self, text='Рассчитать')
-        self.button_calculate.grid(column=0, row=1)
-        #   Frame for calculated parameters
-        self.frame_outputs = ttk.LabelFrame(self,
-                                            text='Рассчитанные параметры:',
-                                            labelanchor="n")
-        self.frame_outputs.grid(column=0, row=2, padx=5, pady=5)
         Rec(self)
 
 
 class Rec:
     def __init__(self, root):
         self.root = root
+        self.root.title('Расчет внеосевого коэффициента усиления антенны')
+        #   Frame for input data
+        self.root.frame_inputs = ttk.LabelFrame(self.root, text='Входные данные:',
+                                           labelanchor="n")
+        self.root.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
+        #   Button for calling calculations
+        self.root.button_calculate = ttk.Button(self.root, text='Рассчитать')
+        self.root.button_calculate.grid(column=0, row=1)
+        #   Frame for calculated parameters
+        self.root.frame_outputs = ttk.LabelFrame(self.root,
+                                            text='Рассчитанные параметры:',
+                                            labelanchor="n")
+        self.root.frame_outputs.grid(column=0, row=2, padx=5, pady=5)
         self.input_widgets()
         self.root.button_calculate.bind('<Button-1>', self.set_outputs)
         self.output_widgets()
@@ -226,36 +226,34 @@ class Rec:
         self.root.entry_dw.delete(0, END)
         self.root.entry_dw.insert(0, self.outputs[2])
 
-    class Equations:
+    def equations(self, inputs):
+        self.s_l = 299792458  # speed of light, m/s
+        # off-axis angle (°), frequency (GHz), antenna diameter (m)
+        self.phi, self.f, self.d = inputs[:3]
+        self.g = ''
+        self.add_params()
+        self.offaxis_gain()
+        self.outputs = [self.gr, self.wr, self.dwr]
 
-        def __init__(self, inputs):
-            self.s_l = 299792458  # speed of light, m/s
-            # off-axis angle (°), frequency (GHz), antenna diameter (m)
-            self.phi, self.f, self.d = inputs[:3]
-            self.g = ''
-            self.add_params()
-            self.offaxis_gain()
-            self.outputs = [self.gr, self.wr, self.dwr]
+    #   Additional parameter equations
+    def add_params(self):
+        # длина волны, м
+        self.w = self.s_l / (self.f * 10 ** 9) if self.f > 0 else 'f = 0 !'
+        # длина волны, мм
+        self.wr = (round(10 ** 3 * self.w, 2) if type(self.w) == float
+                   else self.w)
+        # отношение диаметра антенны к длине волны
+        if self.d > 0 and self.f > 0:
+            self.dw = self.d / self.w
+        elif self.d == 0:
+            self.dw = 'd = 0 !'
+        else:
+            self.dw = 'f = 0 !'
+        self.dwr = round(self.dw, 2) if type(self.dw) == float else self.dw
 
-        #   Additional parameter equations
-        def add_params(self):
-            # длина волны, м
-            self.w = self.s_l / (self.f * 10 ** 9) if self.f > 0 else 'f = 0 !'
-            # длина волны, мм
-            self.wr = (round(10 ** 3 * self.w, 2) if type(self.w) == float
-                       else self.w)
-            # отношение диаметра антенны к длине волны
-            if self.d > 0 and self.f > 0:
-                self.dw = self.d / self.w
-            elif self.d == 0:
-                self.dw = 'd = 0 !'
-            else:
-                self.dw = 'f = 0 !'
-            self.dwr = round(self.dw, 2) if type(self.dw) == float else self.dw
-
-        #   Off-axis gain equations
-        def offaxis_gain(self):
-            self.gr = round(self.g, 2) if type(self.g) == float else self.g
+    #   Off-axis gain equations
+    def offaxis_gain(self):
+        self.gr = round(self.g, 2) if type(self.g) == float else self.g
 
 
 class AP8(Rec):
@@ -728,7 +726,7 @@ class S465(Rec):
                 elif self.phi > 180:
                     self.g = '\u03C6 > 180 !'
                 else:
-                    if (self.ab or self.dw > 100):
+                    if self.ab or self.dw > 100:
                         if self.phi_min <= self.phi < 48:
                             self.g = 32 - 25 * log10(self.phi)
                         else:
