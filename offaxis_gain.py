@@ -567,12 +567,12 @@ class AP30_97(AP8):
             elif self.phi_0 <= self.phi < self.phi_1:
                 self.gx = self.gmax - 17 + self.c * ((self.phi - self.phi_0)
                                                      / (self.phi_1
-                                                     - self.phi_0))
-            elif (self.phi_1 <= self.phi < self.phi_2):
+                                                        - self.phi_0))
+            elif self.phi_1 <= self.phi < self.phi_2:
                 self.gx = 21 - 25 * log10(self.phi)
-            elif (self.phi_2 <= self.phi < 70):
+            elif self.phi_2 <= self.phi < 70:
                 self.gx = - 5
-            elif (70 <= self.phi <= 180):
+            elif 70 <= self.phi <= 180:
                 self.gx = 0
             else:
                 self.gx = '\u03C6 > 180 !'
