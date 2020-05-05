@@ -754,22 +754,19 @@ class S465(Rec):
 
     def calculate(self, inputs):
         self.ab = inputs[3]
-        # ab = True, если земная станция принадлежит сети,
-        # координируемой после 1993 г.
+        # ab = True, if earth station belongs to the network,
+        # coordinated after 1993.
         self.tr = inputs[4]
-        # tr = True, если направление излучения - передача
-        super().calculate(inputs)
-        self.out += [self.phi_minr]
+        # tr = True, if emission direction is transmit
+        return super().calculate(inputs)
 
     def add_params(self):
-        super().add_params()
-
+        self.a_p = super().add_params()
         if 2 <= self.f <= 31:
             if self.ab or self.dw > 100:
                 if self.tr or self.dw >= 33.3:
                     if self.dw >= 50:
                         self.phi_min = max(1, 100 * self.w / self.d)
-                    # минимальный внеосевой угол, градусов
                     else:
                         self.phi_min = max(2, 114 * (self.dw) ** (- 1.09))
                 else:
@@ -780,15 +777,15 @@ class S465(Rec):
             self.phi_min = 'f < 2 ГГц !'
         else:
             self.phi_min = 'f > 31 ГГц !'
-        self.phi_minr = round(self.phi_min, 2) if (type(self.phi_min)
-                                                   == float) else (
-                                                       self.phi_min)
+        self.phi_minr = round(self.phi_min, 2) if type(self.phi_min) ==\
+            float else self.phi_min
+        self.a_p += [self.phi_minr]
+        return self.a_p
 
     def offaxis_gain(self):
         if 2 <= self.f <= 31:
             if self.phi < self.phi_min:
                 self.g = '\u03C6 < \u03C6_min !'
-            # внеосевой коэффициент усиления антенны, дБ
             elif self.phi > 180:
                 self.g = '\u03C6 > 180 !'
             else:
@@ -799,41 +796,34 @@ class S465(Rec):
                         self.g = -10
                 else:
                     if self.phi_min <= self.phi < 48:
-                        self.g = 52 - 10 * (log10(self.dw)) - (
-                                25 * log10(self.phi))
+                        self.g = 52 - 10 * (log10(self.dw)) -\
+                                 (25 * log10(self.phi))
                     else:
                         self.g = 10 - 10 * log10(self.dw)
         elif self.f < 2:
             self.g = 'f < 2 ГГц !'
         else:
             self.g = 'f > 31 ГГц !'
-        super().offaxis_gain()
+        self.m_p = super().offaxis_gain()
+        return self.m_p
 
     def test(self):
-        self.calculate([1, 14, 1, True, True])
-        assert self.out == ['\u03C6 < \u03C6_min !', 21.41, 46.7, 2]
-        self.calculate([3, 14, 1, True, True])
-        assert self.gr == 20.07
-        self.calculate([50, 14, 1, True, True])
-        assert self.gr == -10
-        self.calculate([200, 14, 1, True, True])
-        assert self.gr == '\u03C6 > 180 !'
-        self.calculate([1, 14, 3, True, True])
-        assert self.out == [32, 21.41, 140.1, 1]
-        self.calculate([1, 14, 1, False, True])
-        assert self.out == ['\u03C6 < \u03C6_min !', 21.41, 46.7, 2.14]
-        self.calculate([3, 14, 1, False, True])
-        assert self.gr == 23.38
-        self.calculate([50, 14, 1, False, True])
-        assert self.gr == -6.69
-        self.calculate([200, 14, 1, False, True])
-        assert self.gr == '\u03C6 > 180 !'
-        self.calculate([1, 14, 3, False, True])
-        assert self.out == [32, 21.41, 140.1, 1]
-        self.calculate([1, 3.4, 1, True, False])
-        assert self.out == ['\u03C6 < \u03C6_min !', 88.17, 11.34, 2.5]
-        self.calculate([1, 3.4, 3, True, False])
-        assert self.out == ['\u03C6 < \u03C6_min !', 88.17, 34.02, 2.44]
+        assert self.calculate([1, 14, 1, True, True]) ==\
+               ['\u03C6 < \u03C6_min !', 21.41, 46.7, 2]
+        assert self.calculate([3, 14, 1, True, True])[0] == 20.07
+        assert self.calculate([50, 14, 1, True, True])[0] == -10
+        assert self.calculate([200, 14, 1, True, True])[0] == '\u03C6 > 180 !'
+        assert self.calculate([1, 14, 3, True, True]) == [32, 21.41, 140.1, 1]
+        assert self.calculate([1, 14, 1, False, True]) ==\
+               ['\u03C6 < \u03C6_min !', 21.41, 46.7, 2.14]
+        assert self.calculate([3, 14, 1, False, True])[0] == 23.38
+        assert self.calculate([50, 14, 1, False, True])[0] == -6.69
+        assert self.calculate([200, 14, 1, False, True])[0] == '\u03C6 > 180 !'
+        assert self.calculate([1, 14, 3, False, True]) == [32, 21.41, 140.1, 1]
+        assert self.calculate([1, 3.4, 1, True, False]) ==\
+               ['\u03C6 < \u03C6_min !', 88.17, 11.34, 2.5]
+        assert self.calculate([1, 3.4, 3, True, False]) ==\
+               ['\u03C6 < \u03C6_min !', 88.17, 34.02, 2.44]
 
 
 class S580(S465):
@@ -849,27 +839,23 @@ class S580(S465):
 
     def calculate(self, inputs):
         self.inputs = inputs
-        self.ab = inputs[3]
-        # ab = True, если земная станция принадлежит сети,
-        # координируемой после 1993 г.
-        super().calculate(inputs)
-        self.out += [self.phi_minr]
+        return super().calculate(inputs)
 
     def add_params(self):
-        super().add_params()
+        self.a_p = super().add_params()
         if self.dw >= 50:
-            # минимальный внеосевой угол, градусов
             self.phi_min = max(1, 100 * self.w / self.d)
         else:
             self.phi_min = ''
-        self.phi_minr = round(self.phi_min, 2) if (type(self.phi_min) ==
-                                                   float) else self.phi_min
+        self.phi_minr = round(self.phi_min, 2) if type(self.phi_min) ==\
+            float else self.phi_min
+        self.a_p += [self.phi_minr]
+        return self.a_p
 
     def offaxis_gain(self):
         if self.dw >= 50:
             if self.phi < self.phi_min:
-                self.g = self.gmax - 2.5 * 10 ** (-3) * \
-                         (self.dw * self.phi) ** 2
+                self.g = AP7.calculate(inputs)
             elif self.phi_min <= self.phi <= 20:
                 self.g = 29 - 25 * log10(self.phi)
                 # elif (20 < self.phi <= 26.3):
@@ -878,7 +864,8 @@ class S580(S465):
                 self.g = S465.g
         else:
             self.g = 'D/\u03BB < 50 !'
-        super().offaxis_gain()
+        self.m_p = super(S465, self).offaxis_gain()
+        return self.m_p
 
     def test(self):
         pass
