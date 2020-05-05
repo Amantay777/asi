@@ -21,12 +21,12 @@ class Root(Tk):
 
 class Rec:
     def __init__(self, root):
-        self.test()
         self.root = root
         self.root.title('Расчет внеосевого коэффициента усиления антенны')
         self.input_widgets()
         self.btn_calc()
         self.output_widgets()
+        self.test()
 
     def input_widgets(self):
         #   Frame for input data
@@ -234,9 +234,10 @@ class Rec:
         # off-axis angle (°), frequency (GHz), antenna diameter (m)
         self.phi, self.f, self.d = inputs[:3]
         self.g = ''
-        self.add_params()
-        self.offaxis_gain()
-        self.out = [self.gr, self.wr, self.dwr]
+        self.a_p = self.add_params()
+        self.m_p = self.offaxis_gain()
+        self.out = self.m_p + self.a_p
+        return self.out
 
     #   Additional parameter equations
     def add_params(self):
@@ -253,10 +254,12 @@ class Rec:
         else:
             self.dw = 'f = 0 !'
         self.dwr = round(self.dw, 2) if type(self.dw) == float else self.dw
+        return [self.wr, self.dwr]
 
-    #   Off-axis gain equations
+        #   Off-axis gain equations
     def offaxis_gain(self):
         self.gr = round(self.g, 2) if type(self.g) == float else self.g
+        return [self.gr]
 
     def test(self):
         pass
@@ -328,13 +331,8 @@ class AP8(Rec):
         self.root.entry_phib.delete(0, END)
         self.root.entry_phib.insert(0, self.out[7])
 
-    def calculate(self, inputs):
-        super().calculate(inputs)
-        self.out += [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
-                     self.phi_br]
-
     def add_params(self):
-        super().add_params()
+        self.a_p = super().add_params()
         self.gmax = 20 * log10(self.dw) + 7.7
         self.gmaxr = round(self.gmax, 2)
         self.g1 = 2 + 15 * log10(self.dw)
@@ -347,6 +345,9 @@ class AP8(Rec):
             self.phi_r = 100 * self.w / self.d
         self.phi_rr = round(self.phi_r, 2)
         self.phi_br = self.phi_b = 48
+        self.a_p += [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
+                     self.phi_br]
+        return self.a_p
 
     def offaxis_gain(self):
         if self.phi == 0:
@@ -368,38 +369,29 @@ class AP8(Rec):
                     self.g = (52 - 10*log10(self.dw) - 25*log10(self.phi))
                 else:
                     self.g = 10 - 10 * log10(self.dw)
-        super().offaxis_gain()
+        self.m_p = super().offaxis_gain()
+        return self.m_p
 
     def test(self):
-        self.calculate([0, 14, 3])
-        assert self.out == [50.63, 21.41, 140.1, 50.63, 34.2, 0.58, 0.82, 48]
-        self.calculate([0.3, 14, 3])
-        assert self.gr == 46.21
-        self.calculate([0.7, 14, 3])
-        assert self.gr == 34.2
-        self.calculate([20, 14, 3])
-        assert self.gr == -0.53
-        self.calculate([100, 14, 3])
-        assert self.gr == -10
-        self.calculate([200, 14, 3])
-        assert self.gr == '\u03C6 > 180 !'
-        self.calculate([0, 14, 1])
-        assert self.out == [41.09, 21.41, 46.7, 41.09, 27.04, 1.61, 2.14, 48]
-        self.calculate([0.8, 14, 1])
-        assert self.gr == 37.6
-        self.calculate([2, 14, 1])
-        assert self.gr == 27.04
-        self.calculate([20, 14, 1])
-        assert self.gr == 2.78
-        self.calculate([100, 14, 1])
-        assert self.gr == -6.69
-        self.calculate([200, 14, 1])
-        assert self.gr == '\u03C6 > 180 !'
+        assert self.calculate([0, 14, 3]) == [50.63, 21.41, 140.1, 50.63, 34.2,
+                                              0.58, 0.82, 48]
+        assert self.calculate([0.3, 14, 3])[0] == 46.21
+        assert self.calculate([0.7, 14, 3])[0] == 34.2
+        assert self.calculate([20, 14, 3])[0] == -0.53
+        assert self.calculate([100, 14, 3])[0] == -10
+        assert self.calculate([200, 14, 3])[0] == '\u03C6 > 180 !'
+        assert self.calculate([0, 14, 1]) == [41.09, 21.41, 46.7, 41.09, 27.04,
+                                              1.61, 2.14, 48]
+        assert self.calculate([0.8, 14, 1])[0] == 37.6
+        assert self.calculate([2, 14, 1])[0] == 27.04
+        assert self.calculate([20, 14, 1])[0] == 2.78
+        assert self.calculate([100, 14, 1])[0] == -6.69
+        assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
 
 
 class AP7(AP8):
     def add_params(self):
-        super().add_params()
+        self.a_p = super().add_params()
         if self.dw < 35:
             self.gmaxr = self.g1r = self.phi_mr = 'D/\u03BB < 35 !'
             self.phi_rr = self.phi_br = 'D/\u03BB < 35 !'
@@ -412,47 +404,41 @@ class AP7(AP8):
             self.phi_m = 20 * (self.w / self.d) * sqrt(self.gmax - self.g1)
             self.phi_mr = round(self.phi_m, 2)
             self.phi_br = self.phi_b = 36
+        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
+                     self.phi_br]
+        return self.a_p
 
     def offaxis_gain(self):
         if self.dw < 35:
             self.g = 'D/\u03BB < 35 !'
         else:
-            super().offaxis_gain()
+            self.g = super().offaxis_gain()[0]
         if self.phi_r <= self.phi < self.phi_b:
             self.g = 29 - 25 * log10(self.phi)
         elif self.phi_b <= self.phi <= 180:
             self.g = - 10
-        super(AP8, self).offaxis_gain()
+        self.m_p = super(AP8, self).offaxis_gain()
+        return self.m_p
 
     def test(self):
-        self.calculate([0, 14, 0.6])
-        assert self.out == ['D/\u03BB < 35 !', 21.41, 28.02, 'D/\u03BB < 35 !',
-                            'D/\u03BB < 35 !', 'D/\u03BB < 35 !',
-                            'D/\u03BB < 35 !', 'D/\u03BB < 35 !']
-        self.calculate([0, 14, 3])
-        assert self.out == [50.63, 21.41, 140.1, 50.63, 31.2, 0.63, 0.82, 36]
-        self.calculate([0.3, 14, 3])
-        assert self.gr == 46.21
-        self.calculate([0.7, 14, 3])
-        assert self.gr == 31.2
-        self.calculate([20, 14, 3])
-        assert self.gr == -3.53
-        self.calculate([100, 14, 3])
-        assert self.gr == -10
-        self.calculate([200, 14, 3])
-        assert self.gr == '\u03C6 > 180 !'
-        self.calculate([0, 14, 1])
-        assert self.out == [41.09, 21.41, 46.7, 41.09, 20.73, 1.93, 2.14, 36]
-        self.calculate([1, 14, 1])
-        assert self.gr == 35.63
-        self.calculate([2, 14, 1])
-        assert self.gr == 20.73
-        self.calculate([20, 14, 1])
-        assert self.gr == -3.53
-        self.calculate([100, 14, 1])
-        assert self.gr == -10
-        self.calculate([200, 14, 1])
-        assert self.gr == '\u03C6 > 180 !'
+        assert self.calculate([0, 14, 0.6]) == \
+               ['D/\u03BB < 35 !', 21.41, 28.02, 'D/\u03BB < 35 !',
+                'D/\u03BB < 35 !', 'D/\u03BB < 35 !', 'D/\u03BB < 35 !',
+                'D/\u03BB < 35 !']
+        assert self.calculate([0, 14, 3]) == [50.63, 21.41, 140.1, 50.63, 31.2,
+                                              0.63, 0.82, 36]
+        assert self.calculate([0.3, 14, 3])[0] == 46.21
+        assert self.calculate([0.7, 14, 3])[0] == 31.2
+        assert self.calculate([20, 14, 3])[0] == -3.53
+        assert self.calculate([100, 14, 3])[0] == -10
+        assert self.calculate([200, 14, 3])[0] == '\u03C6 > 180 !'
+        assert self.calculate([0, 14, 1]) == [41.09, 21.41, 46.7, 41.09, 20.73,
+                                              1.93, 2.14, 36]
+        assert self.calculate([1, 14, 1])[0] == 35.63
+        assert self.calculate([2, 14, 1])[0] == 20.73
+        assert self.calculate([20, 14, 1])[0] == -3.53
+        assert self.calculate([100, 14, 1])[0] == -10
+        assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
 
 
 class AP3097(AP8):
@@ -573,19 +559,17 @@ class AP3097(AP8):
 
     def calculate(self, inputs):
         self.eta = inputs[3]
-        super().calculate(inputs)
-        self.out += [self.gxr, self.z25phi_0r, self.z44phi_0r, self.phi_0r,
-                     self.phi_1r, self.phi_2r, self.cr]
+        return super().calculate(inputs)
 
     def add_params(self):
-        super().add_params()
+        self.a_p = super().add_params()
         self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
         self.gmaxr = round(self.gmax, 2)
         self.phi_r = 95 * self.w / self.d
         self.phi_rr = round(self.phi_r, 2)
         self.g1 = 29 - 25 * log10(self.phi_r)
         self.g1r = round(self.g1, 2)
-        self.phi_m = (self.w / self.d) * sqrt((self.gmax - self.g1)/0.0025)
+        self.phi_m = (self.w / self.d) * sqrt((self.gmax - self.g1) / 0.0025)
         self.phi_mr = round(self.phi_m, 2)
         self.phi_b = 10 ** (34 / 25)
         self.phi_br = round(self.phi_b, 2)
@@ -601,9 +585,14 @@ class AP3097(AP8):
         self.phi_2r = round(self.phi_2, 2)
         self.c = 21 - 25 * log10(self.phi_1) - (self.gmax - 17)
         self.cr = round(self.c, 2)
+        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
+                        self.phi_br]
+        self.a_p += [self.z25phi_0r, self.z44phi_0r, self.phi_0r,
+                     self.phi_1r, self.phi_2r, self.cr]
+        return self.a_p
 
     def offaxis_gain(self):
-        super().offaxis_gain()
+        self.g = super().offaxis_gain()[0]
         # Co-polar. off-axis gain
         if self.phi_r <= self.phi < self.phi_b:
             self.g = 29 - 25 * log10(self.phi)
@@ -611,7 +600,7 @@ class AP3097(AP8):
             self.g = - 5
         elif 70 <= self.phi <= 180:
             self.g = 0
-        super(AP8, self).offaxis_gain()
+        self.m_p = super(AP8, self).offaxis_gain()
         # Cross-polar. off-axis gain
         if 0 <= self.phi < self.z25phi_0:
             self.gx = self.gmax - 25
@@ -621,9 +610,8 @@ class AP3097(AP8):
         elif self.z44phi_0 <= self.phi < self.phi_0:
             self.gx = self.gmax - 17
         elif self.phi_0 <= self.phi < self.phi_1:
-            self.gx = self.gmax - 17 + self.c * ((self.phi - self.phi_0)
-                                                 / (self.phi_1
-                                                    - self.phi_0))
+            self.gx = self.gmax - 17 + self.c * ((self.phi - self.phi_0) /
+                                                 (self.phi_1 - self.phi_0))
         elif self.phi_1 <= self.phi < self.phi_2:
             self.gx = 21 - 25 * log10(self.phi)
         elif self.phi_2 <= self.phi < 70:
@@ -633,30 +621,23 @@ class AP3097(AP8):
         else:
             self.gx = '\u03C6 > 180 !'
         self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
+        self.m_p += [self.gxr]
+        return self.m_p
 
     def test(self):
-        self.calculate([0, 12.1, 0.6, 0.65])
-        assert self.out == [35.75, 24.78, 24.22, 35.75, 14.16, 3.84, 3.92,
-                            22.91, 10.75, 0.72, 1.26, 2.86, 4.57, 10.96,
-                            -14.24]
-        self.calculate([0.3, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [35.62, 10.75]
-        self.calculate([1, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [34.29, 14.95]
-        self.calculate([2, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [29.89, 18.75]
-        self.calculate([3.9, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [14.16, 10.07]
-        self.calculate([4, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [13.95, 9.24]
-        self.calculate([8, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [6.42, -1.58]
-        self.calculate([50, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [-5, -5]
-        self.calculate([100, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == [0, 0]
-        self.calculate([200, 12.1, 0.6, 0.65])
-        assert [self.gr, self.gxr] == ['\u03C6 > 180 !', '\u03C6 > 180 !']
+        assert self.calculate([0, 12.1, 0.6, 0.65]) == \
+               [35.75, 10.75, 24.78, 24.22, 35.75, 14.16, 3.84, 3.92, 22.91,
+                0.72, 1.26, 2.86, 4.57, 10.96, -14.24]
+        assert self.calculate([0.3, 12.1, 0.6, 0.65])[:2] == [35.62, 10.75]
+        assert self.calculate([1, 12.1, 0.6, 0.65])[:2] == [34.29, 14.95]
+        assert self.calculate([2, 12.1, 0.6, 0.65])[:2] == [29.89, 18.75]
+        assert self.calculate([3.9, 12.1, 0.6, 0.65])[:2] == [14.16, 10.07]
+        assert self.calculate([4, 12.1, 0.6, 0.65])[:2] == [13.95, 9.24]
+        assert self.calculate([8, 12.1, 0.6, 0.65])[:2] == [6.42, -1.58]
+        assert self.calculate([50, 12.1, 0.6, 0.65])[:2] == [-5, -5]
+        assert self.calculate([100, 12.1, 0.6, 0.65])[:2] == [0, 0]
+        assert self.calculate([200, 12.1, 0.6, 0.65])[:2] == ['\u03C6 > 180 !',
+                                                              '\u03C6 > 180 !']
 
 
 class AP30B(AP3097):
@@ -668,54 +649,41 @@ class AP30B(AP3097):
         self.root.entry_phib.destroy()
 
     def set_outputs(self, event):
-        Rec.set_outputs(self, event)
-        #   Set Gmax
-        self.root.entry_gmax.delete(0, END)
-        self.root.entry_gmax.insert(0, self.out[3])
-        #   Set G1
-        self.root.entry_g1.delete(0, END)
-        self.root.entry_g1.insert(0, self.out[4])
-        #   Set φm
-        self.root.entry_phim.delete(0, END)
-        self.root.entry_phim.insert(0, self.out[5])
-
-    def calculate(self, inputs):
-        self.eta = inputs[3]
-        Rec.calculate(self, inputs)
-        self.out += [self.gmaxr, self.g1r, self.phi_mr]
+        try:
+            AP8.set_outputs(self, event)
+        except:
+            pass
 
     def add_params(self):
-        super().add_params()
+        self.a_p = AP8.add_params(self)
+        self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
+        self.gmaxr = round(self.gmax, 2)
         self.g1 = - 1 + 15 * log10(self.dw)
         self.g1r = round(self.g1, 2)
         self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
         self.phi_mr = round(self.phi_m, 2)
+        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr]
+        return self.a_p
 
     def offaxis_gain(self):
-        super().offaxis_gain()
+        self.g = AP8.offaxis_gain(self)[0]
         if self.phi_m <= self.phi <= 19.95:
             self.g = min(self.g1, 29 - 25 * log10(self.phi))
         elif 19.95 < self.phi <= 180:
             self.g = max(min(- 3.5, 32 - 25 * log10(self.phi)), -10)
-        self.gr = round(self.g, 2) if type(self.g) == float else self.g
+        self.m_p = super(AP8, self).offaxis_gain()
+        return self.m_p
 
     def test(self):
-        self.calculate([0, 13, 2.7, 0.7])
-        assert self.out == [49.76, 23.06, 117.08, 49.76, 30.03, 0.76]
-        self.calculate([0.3, 13, 2.7, 0.7])
-        assert self.gr == 46.68
-        self.calculate([0.8, 13, 2.7, 0.7])
-        assert self.gr == 30.03
-        self.calculate([10, 13, 2.7, 0.7])
-        assert self.gr == 4
-        self.calculate([20, 13, 2.7, 0.7])
-        assert self.gr == -3.5
-        self.calculate([40, 13, 2.7, 0.7])
-        assert self.gr == -8.05
-        self.calculate([100, 13, 2.7, 0.7])
-        assert self.gr == -10
-        self.calculate([200, 13, 2.7, 0.7])
-        assert self.gr == '\u03C6 > 180 !'
+        assert self.calculate([0, 13, 2.7, 0.7]) == \
+               [49.76, 23.06, 117.08, 49.76, 30.03, 0.76]
+        assert self.calculate([0.3, 13, 2.7, 0.7])[0] == 46.68
+        assert self.calculate([0.8, 13, 2.7, 0.7])[0] == 30.03
+        assert self.calculate([10, 13, 2.7, 0.7])[0] == 4
+        assert self.calculate([20, 13, 2.7, 0.7])[0] == -3.5
+        assert self.calculate([40, 13, 2.7, 0.7])[0] == -8.05
+        assert self.calculate([100, 13, 2.7, 0.7])[0] == -10
+        assert self.calculate([200, 13, 2.7, 0.7])[0] == '\u03C6 > 180 !'
 
 
 class S465(Rec):
@@ -831,8 +799,7 @@ class S465(Rec):
                         self.g = -10
                 else:
                     if self.phi_min <= self.phi < 48:
-                        self.g = 52 - 10 * (
-                            log10(self.dw)) - (
+                        self.g = 52 - 10 * (log10(self.dw)) - (
                                 25 * log10(self.phi))
                     else:
                         self.g = 10 - 10 * log10(self.dw)
@@ -886,7 +853,7 @@ class S580(S465):
         # ab = True, если земная станция принадлежит сети,
         # координируемой после 1993 г.
         super().calculate(inputs)
-        self.outputs += [self.phi_minr]
+        self.out += [self.phi_minr]
 
     def add_params(self):
         super().add_params()
@@ -901,14 +868,14 @@ class S580(S465):
     def offaxis_gain(self):
         if self.dw >= 50:
             if self.phi < self.phi_min:
-                self.g = AP7.equations(self.inputs).g
-            # внеосевой коэффициент усиления антенны, дБ
+                self.g = self.gmax - 2.5 * 10 ** (-3) * \
+                         (self.dw * self.phi) ** 2
             elif self.phi_min <= self.phi <= 20:
                 self.g = 29 - 25 * log10(self.phi)
                 # elif (20 < self.phi <= 26.3):
                 # self.g = -3.5
             else:
-                self.g = S465.Equations(self.inputs + [True]).g
+                self.g = S465.g
         else:
             self.g = 'D/\u03BB < 50 !'
         super().offaxis_gain()
