@@ -43,8 +43,9 @@ class Rec:
         self.root.combobox_rec = ttk.Combobox(self.root.frame_inputs,
                                               width=20,
                                               textvariable=self.root.rec)
-        self.root.combobox_rec['values'] = ('AP30-97', 'AP30B', 'AP7',
-                                            'AP8', 'S.465-6', 'S.580-6')
+        self.root.combobox_rec['values'] = \
+            ('AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01', 'BO.1213',
+             'BO.1900', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
 
@@ -164,11 +165,23 @@ class Rec:
             self.root.frequency.set(12.1)
             self.root.diameter.set(0.6)
             self.root.eta.set(0.65)
+        elif rec == 'BO.1213':
+            BO1213(self.root)
+            self.root.frequency.set(11.7)
+            self.root.diameter.set(0.6)
+            self.root.eta.set(0.65)
+        elif rec == 'BO.1900':
+            BO1900(self.root)
         elif rec == 'AP30B':
             AP30B(self.root)
             self.root.frequency.set(13)
             self.root.diameter.set(2.7)
             self.root.eta.set(0.7)
+        elif rec == 'APERR002V01':
+            APERR002V01(self.root)
+            self.root.frequency.set(13)
+            self.root.diameter.set(2.7)
+            # self.root.eta.set(0.7)
         elif rec == 'S.465-6':
             S465(self.root)
         elif rec == 'S.580-6':
@@ -211,23 +224,23 @@ class Rec:
             return False
 
     def get_inputs(self):
-        self.offaxis_angle = float(self.root.offaxis_angle.get())
-        self.frequency = float(self.root.frequency.get())
-        self.diameter = float(self.root.diameter.get())
-        self.inputs = [self.offaxis_angle, self.frequency, self.diameter]
+        self.phi = float(self.root.offaxis_angle.get())
+        self.f = float(self.root.frequency.get())
+        self.d = float(self.root.diameter.get())
+        self.inputs = [self.phi, self.f, self.d]
 
     def set_outputs(self, event):
         self.get_inputs()
         self.calculate(self.inputs)
         #   Set off-axis gain
         self.root.entry_offaxis_gain.delete(0, END)
-        self.root.entry_offaxis_gain.insert(0, self.out[0])
+        self.root.entry_offaxis_gain.insert(0, self.gr)
         #   Set wavelength
         self.root.entry_wavelength.delete(0, END)
-        self.root.entry_wavelength.insert(0, self.out[1])
+        self.root.entry_wavelength.insert(0, self.wr)
         #   Set D/λ
         self.root.entry_dw.delete(0, END)
-        self.root.entry_dw.insert(0, self.out[2])
+        self.root.entry_dw.insert(0, self.dwr)
 
     def calculate(self, inputs):
         self.s_l = 299792458  # speed of light, m/s
@@ -317,19 +330,19 @@ class AP8(Rec):
         super().set_outputs(event)
         #   Set Gmax
         self.root.entry_gmax.delete(0, END)
-        self.root.entry_gmax.insert(0, self.out[3])
+        self.root.entry_gmax.insert(0, self.gmaxr)
         #   Set G1
         self.root.entry_g1.delete(0, END)
-        self.root.entry_g1.insert(0, self.out[4])
+        self.root.entry_g1.insert(0, self.g1r)
         #   Set φm
         self.root.entry_phim.delete(0, END)
-        self.root.entry_phim.insert(0, self.out[5])
+        self.root.entry_phim.insert(0, self.phi_mr)
         #   Set φr
         self.root.entry_phir.delete(0, END)
-        self.root.entry_phir.insert(0, self.out[6])
+        self.root.entry_phir.insert(0, self.phi_rr)
         #   Set φb
         self.root.entry_phib.delete(0, END)
-        self.root.entry_phib.insert(0, self.out[7])
+        self.root.entry_phib.insert(0, self.phi_br)
 
     def add_params(self):
         self.a_p = super().add_params()
@@ -337,8 +350,7 @@ class AP8(Rec):
         self.gmaxr = round(self.gmax, 2)
         self.g1 = 2 + 15 * log10(self.dw)
         self.g1r = round(self.g1, 2)
-        self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
-        self.phi_mr = round(self.phi_m, 2)
+        self.phim_calc()
         if self.dw >= 100:
             self.phi_r = 15.85 * self.dw ** (-0.6)
         else:
@@ -348,6 +360,10 @@ class AP8(Rec):
         self.a_p += [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
                      self.phi_br]
         return self.a_p
+
+    def phim_calc(self):
+        self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
+        self.phi_mr = round(self.phi_m, 2)
 
     def offaxis_gain(self):
         if self.phi == 0:
@@ -387,303 +403,6 @@ class AP8(Rec):
         assert self.calculate([20, 14, 1])[0] == 2.78
         assert self.calculate([100, 14, 1])[0] == -6.69
         assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
-
-
-class AP7(AP8):
-    def add_params(self):
-        self.a_p = super().add_params()
-        if self.dw < 35:
-            self.gmaxr = self.g1r = self.phi_mr = 'D/\u03BB < 35 !'
-            self.phi_rr = self.phi_br = 'D/\u03BB < 35 !'
-        else:
-            if self.dw >= 100:
-                self.g1 = -1 + 15 * log10(self.dw)
-            else:
-                self.g1 = -21 + 25 * log10(self.dw)
-            self.g1r = round(self.g1, 2)
-            self.phi_m = 20 * (self.w / self.d) * sqrt(self.gmax - self.g1)
-            self.phi_mr = round(self.phi_m, 2)
-            self.phi_br = self.phi_b = 36
-        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
-                     self.phi_br]
-        return self.a_p
-
-    def offaxis_gain(self):
-        if self.dw < 35:
-            self.g = 'D/\u03BB < 35 !'
-        else:
-            self.g = super().offaxis_gain()[0]
-        if self.phi_r <= self.phi < self.phi_b:
-            self.g = 29 - 25 * log10(self.phi)
-        elif self.phi_b <= self.phi <= 180:
-            self.g = - 10
-        self.m_p = super(AP8, self).offaxis_gain()
-        return self.m_p
-
-    def test(self):
-        assert self.calculate([0, 14, 0.6]) == \
-               ['D/\u03BB < 35 !', 21.41, 28.02, 'D/\u03BB < 35 !',
-                'D/\u03BB < 35 !', 'D/\u03BB < 35 !', 'D/\u03BB < 35 !',
-                'D/\u03BB < 35 !']
-        assert self.calculate([0, 14, 3]) == [50.63, 21.41, 140.1, 50.63, 31.2,
-                                              0.63, 0.82, 36]
-        assert self.calculate([0.3, 14, 3])[0] == 46.21
-        assert self.calculate([0.7, 14, 3])[0] == 31.2
-        assert self.calculate([20, 14, 3])[0] == -3.53
-        assert self.calculate([100, 14, 3])[0] == -10
-        assert self.calculate([200, 14, 3])[0] == '\u03C6 > 180 !'
-        assert self.calculate([0, 14, 1]) == [41.09, 21.41, 46.7, 41.09, 20.73,
-                                              1.93, 2.14, 36]
-        assert self.calculate([1, 14, 1])[0] == 35.63
-        assert self.calculate([2, 14, 1])[0] == 20.73
-        assert self.calculate([20, 14, 1])[0] == -3.53
-        assert self.calculate([100, 14, 1])[0] == -10
-        assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
-
-
-class AP3097(AP8):
-    def input_widgets(self):
-        super().input_widgets()
-
-        #   Label for eta entry
-        self.root.label_eta = ttk.Label(self.root.frame_inputs,
-                                        text=('Коэфф. использ. поверхн. '
-                                              'антенны (\u03B7)'))
-        self.root.label_eta.grid(column=0, row=4, sticky=E, padx=5)
-        #   Entry for eta
-        self.root.eta = StringVar()
-        self.root.entry_eta = ttk.Entry(self.root.frame_inputs, width=10,
-                                        textvariable=self.root.eta,
-                                        validate='key',
-                                        validatecommand=(self.eta_vcmd, '%P'))
-        self.root.entry_eta.grid(column=1, row=4, sticky=W)
-        self.root.entry_eta.insert(0, '0.65')
-
-    def output_widgets(self):
-        super().output_widgets()
-
-        #   Label for X-polarisation off-axis gain entry
-        self.root.label_offaxis_gain_x = ttk.Label(self.root.frame_main_out,
-                                                   text=('Кросс-пол. внеосевой'
-                                                         ' коэффициент усилени'
-                                                         'я (Gx), дБ'))
-        self.root.label_offaxis_gain_x.grid(column=0, row=1, sticky=E,
-                                            padx=5, pady=(0, 10))
-        #   Entry for X-polarisation off-axis gain
-        self.root.entry_offaxis_gain_x = ttk.Entry(self.root.frame_main_out,
-                                                   width=10)
-        self.root.entry_offaxis_gain_x.grid(column=1, row=1, sticky=W,
-                                            pady=(0, 10))
-
-        #   Label for 0.25*φ0
-        self.root.label_z25phi0 = ttk.Label(self.root.frame_add_out,
-                                            text=('Внеосевой угол 0.25*\u03C60'
-                                                  ', \u00b0'))
-        self.root.label_z25phi0.grid(column=0, row=7, sticky=E, padx=5)
-        #   Entry for 0.25*φ0
-        self.root.entry_z25phi0 = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_z25phi0.grid(column=1, row=7, sticky=W)
-
-        #   Label for 0.44*φ0
-        self.root.label_z44phi0 = ttk.Label(self.root.frame_add_out,
-                                            text=('Внеосевой угол 0.44*\u03C60'
-                                                  ', \u00b0'))
-        self.root.label_z44phi0.grid(column=0, row=8, sticky=E, padx=5)
-        #   Entry for 0.44*φ0
-        self.root.entry_z44phi0 = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_z44phi0.grid(column=1, row=8, sticky=W)
-
-        #   Label for φ0
-        self.root.label_phi0 = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол \u03C60, '
-                                               '\u00b0'))
-        self.root.label_phi0.grid(column=0, row=9, sticky=E, padx=5)
-        #   Entry for φ0
-        self.root.entry_phi0 = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_phi0.grid(column=1, row=9, sticky=W)
-
-        #   Label for φ1
-        self.root.label_phi1 = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол \u03C61, '
-                                               '\u00b0'))
-        self.root.label_phi1.grid(column=0, row=10, sticky=E, padx=5)
-        #   Entry for φ1
-        self.root.entry_phi1 = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_phi1.grid(column=1, row=10, sticky=W)
-
-        #   Label for φ2
-        self.root.label_phi2 = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол \u03C62, '
-                                               '\u00b0'))
-        self.root.label_phi2.grid(column=0, row=11, sticky=E, padx=5)
-        #   Entry for φ2
-        self.root.entry_phi2 = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_phi2.grid(column=1, row=11, sticky=W)
-
-        #   Label for S
-        self.root.label_s = ttk.Label(self.root.frame_add_out,
-                                      text='Коэффициент C, дБ')
-        self.root.label_s.grid(column=0, row=12, sticky=E, padx=5)
-        #   Entry for S
-        self.root.entry_s = ttk.Entry(self.root.frame_add_out, width=10)
-        self.root.entry_s.grid(column=1, row=12, sticky=W)
-
-    def get_inputs(self):
-        super().get_inputs()
-        self.eta = float(self.root.eta.get())
-        self.inputs += [self.eta]
-
-    def set_outputs(self, event):
-        super().set_outputs(event)
-        #   Set Gx
-        self.root.entry_offaxis_gain_x.delete(0, END)
-        self.root.entry_offaxis_gain_x.insert(0, self.out[8])
-        #   Set 0.25*φ0
-        self.root.entry_z25phi0.delete(0, END)
-        self.root.entry_z25phi0.insert(0, self.out[9])
-        #   Set 0.44*φ0
-        self.root.entry_z44phi0.delete(0, END)
-        self.root.entry_z44phi0.insert(0, self.out[10])
-        #   Set φ0
-        self.root.entry_phi0.delete(0, END)
-        self.root.entry_phi0.insert(0, self.out[11])
-        #   Set φ1
-        self.root.entry_phi1.delete(0, END)
-        self.root.entry_phi1.insert(0, self.out[12])
-        #   Set φ2
-        self.root.entry_phi2.delete(0, END)
-        self.root.entry_phi2.insert(0, self.out[13])
-        #   Set S
-        self.root.entry_s.delete(0, END)
-        self.root.entry_s.insert(0, self.out[14])
-
-    def calculate(self, inputs):
-        self.eta = inputs[3]
-        return super().calculate(inputs)
-
-    def add_params(self):
-        self.a_p = super().add_params()
-        self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
-        self.gmaxr = round(self.gmax, 2)
-        self.phi_r = 95 * self.w / self.d
-        self.phi_rr = round(self.phi_r, 2)
-        self.g1 = 29 - 25 * log10(self.phi_r)
-        self.g1r = round(self.g1, 2)
-        self.phi_m = (self.w / self.d) * sqrt((self.gmax - self.g1) / 0.0025)
-        self.phi_mr = round(self.phi_m, 2)
-        self.phi_b = 10 ** (34 / 25)
-        self.phi_br = round(self.phi_b, 2)
-        self.phi_0 = (2 * self.w / self.d) * sqrt(3 / 0.0025)
-        self.phi_0r = round(self.phi_0, 2)
-        self.z25phi_0 = 0.25 * self.phi_0
-        self.z25phi_0r = round(self.z25phi_0, 2)
-        self.z44phi_0 = 0.44 * self.phi_0
-        self.z44phi_0r = round(self.z44phi_0, 2)
-        self.phi_1 = (self.phi_0 / 2) * sqrt(10.1875)
-        self.phi_1r = round(self.phi_1, 2)
-        self.phi_2 = 10 ** (26 / 25)
-        self.phi_2r = round(self.phi_2, 2)
-        self.c = 21 - 25 * log10(self.phi_1) - (self.gmax - 17)
-        self.cr = round(self.c, 2)
-        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
-                        self.phi_br]
-        self.a_p += [self.z25phi_0r, self.z44phi_0r, self.phi_0r,
-                     self.phi_1r, self.phi_2r, self.cr]
-        return self.a_p
-
-    def offaxis_gain(self):
-        self.g = super().offaxis_gain()[0]
-        # Co-polar. off-axis gain
-        if self.phi_r <= self.phi < self.phi_b:
-            self.g = 29 - 25 * log10(self.phi)
-        elif self.phi_b <= self.phi < 70:
-            self.g = - 5
-        elif 70 <= self.phi <= 180:
-            self.g = 0
-        self.m_p = super(AP8, self).offaxis_gain()
-        # Cross-polar. off-axis gain
-        if 0 <= self.phi < self.z25phi_0:
-            self.gx = self.gmax - 25
-        elif self.z25phi_0 <= self.phi < self.z44phi_0:
-            self.gx = self.gmax - 25 + 8 * ((self.phi - self.z25phi_0)
-                                            / (0.19 * self.phi_0))
-        elif self.z44phi_0 <= self.phi < self.phi_0:
-            self.gx = self.gmax - 17
-        elif self.phi_0 <= self.phi < self.phi_1:
-            self.gx = self.gmax - 17 + self.c * ((self.phi - self.phi_0) /
-                                                 (self.phi_1 - self.phi_0))
-        elif self.phi_1 <= self.phi < self.phi_2:
-            self.gx = 21 - 25 * log10(self.phi)
-        elif self.phi_2 <= self.phi < 70:
-            self.gx = - 5
-        elif 70 <= self.phi <= 180:
-            self.gx = 0
-        else:
-            self.gx = '\u03C6 > 180 !'
-        self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
-        self.m_p += [self.gxr]
-        return self.m_p
-
-    def test(self):
-        assert self.calculate([0, 12.1, 0.6, 0.65]) == \
-               [35.75, 10.75, 24.78, 24.22, 35.75, 14.16, 3.84, 3.92, 22.91,
-                0.72, 1.26, 2.86, 4.57, 10.96, -14.24]
-        assert self.calculate([0.3, 12.1, 0.6, 0.65])[:2] == [35.62, 10.75]
-        assert self.calculate([1, 12.1, 0.6, 0.65])[:2] == [34.29, 14.95]
-        assert self.calculate([2, 12.1, 0.6, 0.65])[:2] == [29.89, 18.75]
-        assert self.calculate([3.9, 12.1, 0.6, 0.65])[:2] == [14.16, 10.07]
-        assert self.calculate([4, 12.1, 0.6, 0.65])[:2] == [13.95, 9.24]
-        assert self.calculate([8, 12.1, 0.6, 0.65])[:2] == [6.42, -1.58]
-        assert self.calculate([50, 12.1, 0.6, 0.65])[:2] == [-5, -5]
-        assert self.calculate([100, 12.1, 0.6, 0.65])[:2] == [0, 0]
-        assert self.calculate([200, 12.1, 0.6, 0.65])[:2] == ['\u03C6 > 180 !',
-                                                              '\u03C6 > 180 !']
-
-
-class AP30B(AP3097):
-    def output_widgets(self):
-        AP8.output_widgets(self)
-        self.root.label_phir.destroy()
-        self.root.entry_phir.destroy()
-        self.root.label_phib.destroy()
-        self.root.entry_phib.destroy()
-
-    def set_outputs(self, event):
-        try:
-            AP8.set_outputs(self, event)
-        except:
-            pass
-
-    def add_params(self):
-        self.a_p = AP8.add_params(self)
-        self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
-        self.gmaxr = round(self.gmax, 2)
-        self.g1 = - 1 + 15 * log10(self.dw)
-        self.g1r = round(self.g1, 2)
-        self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
-        self.phi_mr = round(self.phi_m, 2)
-        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr]
-        return self.a_p
-
-    def offaxis_gain(self):
-        self.g = AP8.offaxis_gain(self)[0]
-        if self.phi_m <= self.phi <= 19.95:
-            self.g = min(self.g1, 29 - 25 * log10(self.phi))
-        elif 19.95 < self.phi <= 180:
-            self.g = max(min(- 3.5, 32 - 25 * log10(self.phi)), -10)
-        self.m_p = super(AP8, self).offaxis_gain()
-        return self.m_p
-
-    def test(self):
-        assert self.calculate([0, 13, 2.7, 0.7]) == \
-               [49.76, 23.06, 117.08, 49.76, 30.03, 0.76]
-        assert self.calculate([0.3, 13, 2.7, 0.7])[0] == 46.68
-        assert self.calculate([0.8, 13, 2.7, 0.7])[0] == 30.03
-        assert self.calculate([10, 13, 2.7, 0.7])[0] == 4
-        assert self.calculate([20, 13, 2.7, 0.7])[0] == -3.5
-        assert self.calculate([40, 13, 2.7, 0.7])[0] == -8.05
-        assert self.calculate([100, 13, 2.7, 0.7])[0] == -10
-        assert self.calculate([200, 13, 2.7, 0.7])[0] == '\u03C6 > 180 !'
 
 
 class S465(Rec):
@@ -826,6 +545,126 @@ class S465(Rec):
                ['\u03C6 < \u03C6_min !', 88.17, 34.02, 2.44]
 
 
+class AP7(AP8):
+    def add_params(self):
+        self.a_p = super().add_params()
+        if self.dw < 35:
+            self.gmaxr = self.g1r = self.phi_mr = 'D/\u03BB < 35 !'
+            self.phi_rr = self.phi_br = 'D/\u03BB < 35 !'
+        else:
+            if self.dw >= 100:
+                self.g1 = -1 + 15 * log10(self.dw)
+            else:
+                self.g1 = -21 + 25 * log10(self.dw)
+            self.g1r = round(self.g1, 2)
+            self.phi_m = 20 * (self.w / self.d) * sqrt(self.gmax - self.g1)
+            self.phi_mr = round(self.phi_m, 2)
+            self.phi_br = self.phi_b = 36
+        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
+                     self.phi_br]
+        return self.a_p
+
+    def offaxis_gain(self):
+        if self.dw < 35:
+            self.g = 'D/\u03BB < 35 !'
+        else:
+            self.g = super().offaxis_gain()[0]
+        if self.phi_r <= self.phi < self.phi_b:
+            self.g = 29 - 25 * log10(self.phi)
+        elif self.phi_b <= self.phi <= 180:
+            self.g = - 10
+        self.m_p = super(AP8, self).offaxis_gain()
+        return self.m_p
+
+    def test(self):
+        assert self.calculate([0, 14, 0.6]) == \
+               ['D/\u03BB < 35 !', 21.41, 28.02, 'D/\u03BB < 35 !',
+                'D/\u03BB < 35 !', 'D/\u03BB < 35 !', 'D/\u03BB < 35 !',
+                'D/\u03BB < 35 !']
+        assert self.calculate([0, 14, 3]) == [50.63, 21.41, 140.1, 50.63, 31.2,
+                                              0.63, 0.82, 36]
+        assert self.calculate([0.3, 14, 3])[0] == 46.21
+        assert self.calculate([0.7, 14, 3])[0] == 31.2
+        assert self.calculate([20, 14, 3])[0] == -3.53
+        assert self.calculate([100, 14, 3])[0] == -10
+        assert self.calculate([200, 14, 3])[0] == '\u03C6 > 180 !'
+        assert self.calculate([0, 14, 1]) == [41.09, 21.41, 46.7, 41.09, 20.73,
+                                              1.93, 2.14, 36]
+        assert self.calculate([1, 14, 1])[0] == 35.63
+        assert self.calculate([2, 14, 1])[0] == 20.73
+        assert self.calculate([20, 14, 1])[0] == -3.53
+        assert self.calculate([100, 14, 1])[0] == -10
+        assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
+
+
+class APERR002V01(AP8):
+    def input_widgets(self):
+        super().input_widgets()
+        #   Label for eta entry
+        self.root.label_eta = ttk.Label(self.root.frame_inputs,
+                                        text=('Коэфф. использ. поверхн. '
+                                              'антенны (\u03B7)'))
+        self.root.label_eta.grid(column=0, row=4, sticky=E, padx=5)
+        #   Entry for eta
+        self.root.eta = StringVar()
+        self.root.entry_eta = ttk.Entry(self.root.frame_inputs, width=10,
+                                        textvariable=self.root.eta,
+                                        validate='key',
+                                        validatecommand=(self.eta_vcmd, '%P'))
+        self.root.entry_eta.grid(column=1, row=4, sticky=W)
+        self.root.entry_eta.insert(0, '0.7')
+
+        self.root.label_coeffa = ttk.Label(self.root.frame_inputs,
+                                           text='Коэффициент A')
+        self.root.label_coeffa.grid(column=0, row=5, sticky=E, padx=5)
+
+        self.root.coeffa_frame = ttk.Frame(self.root.frame_inputs)
+        self.root.coeffa_frame.grid(column=1, row=5)
+
+        self.root.coeffa = IntVar()
+        self.root.radio_29 = ttk.Radiobutton(self.root.coeffa_frame,
+                                             text='29', value=29,
+                                             variable=self.root.coeffa)
+        self.root.radio_29.grid(column=0, row=0)
+        self.root.radio_29.invoke()
+
+        self.root.radio_32 = ttk.Radiobutton(self.root.coeffa_frame,
+                                             text='32', value=32,
+                                             variable=self.root.coeffa)
+        self.root.radio_32.grid(column=1, row=0)
+
+    def get_inputs(self):
+        super().get_inputs()
+        self.eta = float(self.root.eta.get())
+        self.coeffa = int(self.root.coeffa.get())
+        self.inputs += [self.eta, self.coeffa]
+
+    def add_params(self):
+        super().add_params()
+        self.gmax_calc()
+        self.phib_calc()
+        self.g1_calc()
+        self.a_p[2] = self.gmaxr
+        self.a_p[3] = self.g1r
+        self.a_p[6] = self.phi_br
+        return self.a_p
+
+    def gmax_calc(self):
+        self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
+        self.gmaxr = round(self.gmax, 2)
+
+    def phib_calc(self):
+        self.phi_b = 10 ** ((self.coeffa + 10) / 25)
+        self.phi_br = round(self.phi_b, 2)
+
+    def g1_calc(self):
+        self.g1 = 15 * log10(self.dw) - 30 + self.coeffa
+        self.g1r = round(self.g1, 2)
+
+    def test(self):
+        pass
+
+
 class S580(S465):
     def input_widgets(self):
         super().input_widgets()
@@ -855,13 +694,19 @@ class S580(S465):
     def offaxis_gain(self):
         if self.dw >= 50:
             if self.phi < self.phi_min:
-                self.g = AP7.calculate(inputs)
+                self.gmax = 20 * log10(self.dw) + 7.7
+                self.g = self.gmax - 2.5 * 10 ** (-3) *\
+                    (self.dw * self.phi) ** 2
             elif self.phi_min <= self.phi <= 20:
                 self.g = 29 - 25 * log10(self.phi)
                 # elif (20 < self.phi <= 26.3):
                 # self.g = -3.5
+            elif 20 < self.phi < 48:
+                self.g = 32 - 25 * log10(self.phi)
+            elif 48 <= self.phi <= 180:
+                self.g = -10
             else:
-                self.g = S465.g
+                self.g = '\u03C6 > 180 !'
         else:
             self.g = 'D/\u03BB < 50 !'
         self.m_p = super(S465, self).offaxis_gain()
@@ -885,6 +730,273 @@ class S580(S465):
 #         assert S580.Equations([181, 14, 1.1, True
 #                                ]).outputs == ['\u03C6 > 180 !', 21.41, 51.37,
 #                                               1.95]
+
+class AP3097(APERR002V01):
+    def input_widgets(self):
+        super().input_widgets()
+        self.root.entry_eta.insert(0, '0.65')
+        self.root.label_coeffa.destroy()
+        self.root.coeffa_frame.destroy()
+
+    def output_widgets(self):
+        super().output_widgets()
+        #   Label for X-polarisation off-axis gain entry
+        self.root.label_offaxis_gain_x = ttk.Label(self.root.frame_main_out,
+                                                   text=('Кросс-пол. внеосевой'
+                                                         ' коэффициент усилени'
+                                                         'я (Gx), дБ'))
+        self.root.label_offaxis_gain_x.grid(column=0, row=1, sticky=E,
+                                            padx=5, pady=(0, 10))
+        #   Entry for X-polarisation off-axis gain
+        self.root.entry_offaxis_gain_x = ttk.Entry(self.root.frame_main_out,
+                                                   width=10)
+        self.root.entry_offaxis_gain_x.grid(column=1, row=1, sticky=W,
+                                            pady=(0, 10))
+
+        #   Label for 0.25*φ0
+        self.root.label_z25phi0 = ttk.Label(self.root.frame_add_out,
+                                            text=('Внеосевой угол 0.25*\u03C60'
+                                                  ', \u00b0'))
+        self.root.label_z25phi0.grid(column=0, row=7, sticky=E, padx=5)
+        #   Entry for 0.25*φ0
+        self.root.entry_z25phi0 = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_z25phi0.grid(column=1, row=7, sticky=W)
+
+        #   Label for 0.44*φ0
+        self.root.label_z44phi0 = ttk.Label(self.root.frame_add_out,
+                                            text=('Внеосевой угол 0.44*\u03C60'
+                                                  ', \u00b0'))
+        self.root.label_z44phi0.grid(column=0, row=8, sticky=E, padx=5)
+        #   Entry for 0.44*φ0
+        self.root.entry_z44phi0 = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_z44phi0.grid(column=1, row=8, sticky=W)
+
+        #   Label for φ0
+        self.root.label_phi0 = ttk.Label(self.root.frame_add_out,
+                                         text=('Внеосевой угол \u03C60, '
+                                               '\u00b0'))
+        self.root.label_phi0.grid(column=0, row=9, sticky=E, padx=5)
+        #   Entry for φ0
+        self.root.entry_phi0 = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_phi0.grid(column=1, row=9, sticky=W)
+
+        #   Label for φ1
+        self.root.label_phi1 = ttk.Label(self.root.frame_add_out,
+                                         text=('Внеосевой угол \u03C61, '
+                                               '\u00b0'))
+        self.root.label_phi1.grid(column=0, row=10, sticky=E, padx=5)
+        #   Entry for φ1
+        self.root.entry_phi1 = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_phi1.grid(column=1, row=10, sticky=W)
+
+        #   Label for φ2
+        self.root.label_phi2 = ttk.Label(self.root.frame_add_out,
+                                         text=('Внеосевой угол \u03C62, '
+                                               '\u00b0'))
+        self.root.label_phi2.grid(column=0, row=11, sticky=E, padx=5)
+        #   Entry for φ2
+        self.root.entry_phi2 = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_phi2.grid(column=1, row=11, sticky=W)
+
+        #   Label for S
+        self.root.label_s = ttk.Label(self.root.frame_add_out,
+                                      text='Коэффициент C, дБ')
+        self.root.label_s.grid(column=0, row=12, sticky=E, padx=5)
+        #   Entry for S
+        self.root.entry_s = ttk.Entry(self.root.frame_add_out, width=10)
+        self.root.entry_s.grid(column=1, row=12, sticky=W)
+
+    def set_outputs(self, event):
+        super().set_outputs(event)
+        #   Set Gx
+        self.root.entry_offaxis_gain_x.delete(0, END)
+        self.root.entry_offaxis_gain_x.insert(0, self.gxr)
+        #   Set 0.25*φ0
+        self.root.entry_z25phi0.delete(0, END)
+        self.root.entry_z25phi0.insert(0, self.z25phi_0r)
+        #   Set 0.44*φ0
+        self.root.entry_z44phi0.delete(0, END)
+        self.root.entry_z44phi0.insert(0, self.z44phi_0r)
+        #   Set φ0
+        self.root.entry_phi0.delete(0, END)
+        self.root.entry_phi0.insert(0, self.phi_0r)
+        #   Set φ1
+        self.root.entry_phi1.delete(0, END)
+        self.root.entry_phi1.insert(0, self.phi_1r)
+        #   Set φ2
+        self.root.entry_phi2.delete(0, END)
+        self.root.entry_phi2.insert(0, self.phi_2r)
+        #   Set S
+        self.root.entry_s.delete(0, END)
+        self.root.entry_s.insert(0, self.sr)
+
+    def calculate(self, inputs):
+        self.eta = inputs[3]
+        return super().calculate(inputs)
+
+    def add_params(self):
+        super().add_params()
+        self.phir_calc()
+        self.g1_calc()
+        self.phim_calc()
+        self.phib_calc()
+        self.xap_calc()
+        self.a_p[3:] = [self.g1r, self.phi_mr, self.phi_rr, self.phi_br]
+        self.a_p += [self.z25phi_0r, self.z44phi_0r, self.phi_0r,
+                     self.phi_1r, self.phi_2r, self.sr]
+        return self.a_p
+
+    def phir_calc(self):
+        self.phi_r = 95 * self.w / self.d
+        self.phi_rr = round(self.phi_r, 2)
+
+    def g1_calc(self):
+        self.g1 = 29 - 25 * log10(self.phi_r)
+        self.g1r = round(self.g1, 2)
+
+    def phib_calc(self):
+        self.phi_b = 10 ** (34 / 25)
+        self.phi_br = round(self.phi_b, 2)
+
+    def xap_calc(self):
+        self.phi_0 = (2 * self.w / self.d) * sqrt(3 / 0.0025)
+        self.phi_0r = round(self.phi_0, 2)
+        self.z25phi_0 = 0.25 * self.phi_0
+        self.z25phi_0r = round(self.z25phi_0, 2)
+        self.z44phi_0 = 0.44 * self.phi_0
+        self.z44phi_0r = round(self.z44phi_0, 2)
+        self.phi_1 = (self.phi_0 / 2) * sqrt(10.1875)
+        self.phi_1r = round(self.phi_1, 2)
+        self.phi_2 = 10 ** (26 / 25)
+        self.phi_2r = round(self.phi_2, 2)
+        self.s = 21 - 25 * log10(self.phi_1) - (self.gmax - 17)
+        self.sr = round(self.s, 2)
+
+    def offaxis_gain(self):
+        self.g = super().offaxis_gain()[0]
+        # Co-polar. off-axis gain
+        if self.phi_r <= self.phi < self.phi_b:
+            self.g = 29 - 25 * log10(self.phi)
+        elif self.phi_b <= self.phi < 70:
+            self.g = - 5
+        elif 70 <= self.phi <= 180:
+            self.g = 0
+        self.m_p = super(AP8, self).offaxis_gain()
+        # Cross-polar. off-axis gain
+        if 0 <= self.phi < self.z25phi_0:
+            self.gx = self.gmax - 25
+        elif self.z25phi_0 <= self.phi < self.z44phi_0:
+            self.gx = self.gmax - 25 + 8 * ((self.phi - self.z25phi_0)
+                                            / (0.19 * self.phi_0))
+        elif self.z44phi_0 <= self.phi < self.phi_0:
+            self.gx = self.gmax - 17
+        elif self.phi_0 <= self.phi < self.phi_1:
+            self.gx = self.gmax - 17 + self.s * ((self.phi - self.phi_0) /
+                                                 (self.phi_1 - self.phi_0))
+        elif self.phi_1 <= self.phi < self.phi_2:
+            self.gx = 21 - 25 * log10(self.phi)
+        elif self.phi_2 <= self.phi < 70:
+            self.gx = - 5
+        elif 70 <= self.phi <= 180:
+            self.gx = 0
+        else:
+            self.gx = '\u03C6 > 180 !'
+        self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
+        self.m_p += [self.gxr]
+        return self.m_p
+
+    def test(self):
+        assert self.calculate([0, 12.1, 0.6, 0.65]) == \
+               [35.75, 10.75, 24.78, 24.22, 35.75, 14.16, 3.84, 3.92, 22.91,
+                0.72, 1.26, 2.86, 4.57, 10.96, -14.24]
+        assert self.calculate([0.3, 12.1, 0.6, 0.65])[:2] == [35.62, 10.75]
+        assert self.calculate([1, 12.1, 0.6, 0.65])[:2] == [34.29, 14.95]
+        assert self.calculate([2, 12.1, 0.6, 0.65])[:2] == [29.89, 18.75]
+        assert self.calculate([3.9, 12.1, 0.6, 0.65])[:2] == [14.16, 10.07]
+        assert self.calculate([4, 12.1, 0.6, 0.65])[:2] == [13.95, 9.24]
+        assert self.calculate([8, 12.1, 0.6, 0.65])[:2] == [6.42, -1.58]
+        assert self.calculate([50, 12.1, 0.6, 0.65])[:2] == [-5, -5]
+        assert self.calculate([100, 12.1, 0.6, 0.65])[:2] == [0, 0]
+        assert self.calculate([200, 12.1, 0.6, 0.65])[:2] == ['\u03C6 > 180 !',
+                                                              '\u03C6 > 180 !']
+
+
+class AP30B(AP3097):
+    def output_widgets(self):
+        AP8.output_widgets(self)
+        self.root.label_phir.destroy()
+        self.root.entry_phir.destroy()
+        self.root.label_phib.destroy()
+        self.root.entry_phib.destroy()
+
+    def set_outputs(self, event):
+        try:
+            AP8.set_outputs(self, event)
+        except:
+            pass
+
+    def add_params(self):
+        self.a_p = AP8.add_params(self)
+        self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
+        self.gmaxr = round(self.gmax, 2)
+        self.g1 = - 1 + 15 * log10(self.dw)
+        self.g1r = round(self.g1, 2)
+        self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
+        self.phi_mr = round(self.phi_m, 2)
+        self.a_p[2:] = [self.gmaxr, self.g1r, self.phi_mr]
+        return self.a_p
+
+    def offaxis_gain(self):
+        self.g = AP8.offaxis_gain(self)[0]
+        if self.phi_m <= self.phi <= 19.95:
+            self.g = min(self.g1, 29 - 25 * log10(self.phi))
+        elif 19.95 < self.phi <= 180:
+            self.g = max(min(- 3.5, 32 - 25 * log10(self.phi)), -10)
+        self.m_p = super(AP8, self).offaxis_gain()
+        return self.m_p
+
+    def test(self):
+        assert self.calculate([0, 13, 2.7, 0.7]) == \
+               [49.76, 23.06, 117.08, 49.76, 30.03, 0.76]
+        assert self.calculate([0.3, 13, 2.7, 0.7])[0] == 46.68
+        assert self.calculate([0.8, 13, 2.7, 0.7])[0] == 30.03
+        assert self.calculate([10, 13, 2.7, 0.7])[0] == 4
+        assert self.calculate([20, 13, 2.7, 0.7])[0] == -3.5
+        assert self.calculate([40, 13, 2.7, 0.7])[0] == -8.05
+        assert self.calculate([100, 13, 2.7, 0.7])[0] == -10
+        assert self.calculate([200, 13, 2.7, 0.7])[0] == '\u03C6 > 180 !'
+
+
+class BO1213(AP3097):
+    def add_params(self):
+        self.a_p = super().add_params()
+        if self.dw < 11:
+            self.gmaxr = self.g1r = self.phi_mr = self.phi_rr = 'D/\u03BB < 11 !'
+            self.phi_br = self.z25phi_0r = self.z44phi_0r = 'D/\u03BB < 11 !'
+            self.phi_0r = self.phi_1r = self.phi_2r = self.sr = 'D/\u03BB < 11 !'
+        return self.a_p
+
+    def offaxis_gain(self):
+        self.m_p = super().offaxis_gain()
+        if self.dw < 11:
+            [self.gr, self.gxr] = ['D/\u03BB < 11 !', 'D/\u03BB < 11 !']
+        return self.m_p
+
+
+class BO1900(AP3097):
+    def offaxis_gain(self):
+        if self.dw >= 32:
+            super().offaxis_gain()
+            if 0 <= self.phi < self.phi_0:
+                self.gx = self.gmax - 17
+        else:
+            [self.gr, self.gxr] = ['D/\u03BB < 32 !', 'D/\u03BB < 32 !']
+        self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
+        self.m_p = [self.gr, self.gxr]
+        return self.m_p
+
+    def test(self):
+        pass
 
 
 Root().mainloop()
