@@ -71,20 +71,32 @@ class AP8(Rec):
 
     def add_params(self):
         self.a_p = super().add_params()
+        self.gmax_calc()
+        self.g1_calc()
+        self.phim_calc()
+        self.phib_calc()
+        self.phir_calc()
+        self.a_p += [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
+                     self.phi_br]
+        return self.a_p
+
+    def gmax_calc(self):
         self.gmax = 20 * log10(self.dw) + 7.7
         self.gmaxr = round(self.gmax, 2)
+
+    def g1_calc(self):
         self.g1 = 2 + 15 * log10(self.dw)
         self.g1r = round(self.g1, 2)
-        self.phim_calc()
+
+    def phir_calc(self):
         if self.dw >= 100:
             self.phi_r = 15.85 * self.dw ** (-0.6)
         else:
             self.phi_r = 100 * self.w / self.d
         self.phi_rr = round(self.phi_r, 2)
+
+    def phib_calc(self):
         self.phi_br = self.phi_b = 48
-        self.a_p += [self.gmaxr, self.g1r, self.phi_mr, self.phi_rr,
-                     self.phi_br]
-        return self.a_p
 
     def phim_calc(self):
         self.phi_m = (20 * self.w / self.d) * sqrt(self.gmax - self.g1)
