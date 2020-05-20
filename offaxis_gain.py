@@ -44,7 +44,7 @@ class Rec:
                                               textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
             ('AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01', 'BO.1213',
-             'BO.1900', 'S.1855', 'S.465-6', 'S.580-6')
+             'BO.1900', 'M.694-1', 'S.1855', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
 
@@ -183,6 +183,9 @@ class Rec:
             self.root.frequency.set(13)
             self.root.diameter.set(2.7)
             # self.root.eta.set(0.7)
+        elif rec == 'M.694-1':
+            from m694 import M694
+            M694(self.root)
         elif rec == 'S.1855':
             from s1855 import S1855
             S1855(self.root)
