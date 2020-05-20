@@ -1,5 +1,5 @@
 from ap8 import AP8
-from math import log10, sqrt, pi
+from math import log10, sqrt
 
 
 class AP7(AP8):

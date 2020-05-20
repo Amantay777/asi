@@ -7,38 +7,37 @@ from tkinter import ttk
 class AP8(Rec):
     def output_widgets(self):
         super().output_widgets()
-
         #   Label for Gmax entry
-        self.root.label_gmax = ttk.Label(self.root.frame_add_out,
-                                         text=('Макс. коэффициент усиления '
-                                               '(Gmax), дБ'))
+        self.root.label_gmax = \
+            ttk.Label(self.root.frame_add_out,
+                      text='Макс. коэффициент усиления (Gmax), дБ')
         self.root.label_gmax.grid(column=0, row=2, sticky=E, padx=5)
         #   Entry for Gmax
         self.root.entry_gmax = ttk.Entry(self.root.frame_add_out, width=10)
         self.root.entry_gmax.grid(column=1, row=2, sticky=W)
 
         #   Label for G1 entry
-        self.root.label_g1 = ttk.Label(self.root.frame_add_out,
-                                       text=('Усиление 1-й бок. лепестка (G1),'
-                                             ' дБ'))
+        self.root.label_g1 =\
+            ttk.Label(self.root.frame_add_out,
+                      text='Усиление 1-й бок. лепестка (G1), дБ')
         self.root.label_g1.grid(column=0, row=3, sticky=E, padx=5)
         #   Entry for G1
         self.root.entry_g1 = ttk.Entry(self.root.frame_add_out, width=10)
         self.root.entry_g1.grid(column=1, row=3, sticky=W)
 
         #   Label for φm
-        self.root.label_phim = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол начала G1 '
-                                               '(\u03C6m), \u00b0'))
+        self.root.label_phim =\
+            ttk.Label(self.root.frame_add_out,
+                      text='Внеосевой угол начала G1 (\u03C6m), \u00b0')
         self.root.label_phim.grid(column=0, row=4, sticky=E, padx=5)
         #   Entry for φm
         self.root.entry_phim = ttk.Entry(self.root.frame_add_out, width=10)
         self.root.entry_phim.grid(column=1, row=4, sticky=W)
 
         #   Label for φr
-        self.root.label_phir = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол конца G1 '
-                                               '(\u03C6r), \u00b0'))
+        self.root.label_phir = \
+            ttk.Label(self.root.frame_add_out,
+                      text='Внеосевой угол конца G1 (\u03C6r), \u00b0')
         self.root.label_phir.grid(column=0, row=5, sticky=E, padx=5)
         #   Entry for φr
         self.root.entry_phir = ttk.Entry(self.root.frame_add_out, width=10)

@@ -44,12 +44,12 @@ class Rec:
                                               textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
             ('AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01', 'BO.1213',
-             'BO.1900', 'S.465-6', 'S.580-6')
+             'BO.1900', 'S.1855', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
 
         #   Register entry check function
-        vcmd = self.root.register(self.check_entry)
+        self.vcmd = self.root.register(self.check_entry)
         #   Register eta entry check function
         self.eta_vcmd = self.root.register(self.check_eta_entry)
 
@@ -60,12 +60,10 @@ class Rec:
         self.root.label_offaxis_angle.grid(column=0, row=1, sticky=E, padx=5)
         #   Entry for off-axis angle
         self.root.offaxis_angle = StringVar()
-        self.root.entry_offaxis_angle = ttk.Entry(self.root.frame_inputs,
-                                                  width=10,
-                                                  textvariable=self.root.
-                                                  offaxis_angle,
-                                                  validate='key',
-                                                  validatecommand=(vcmd, '%P'))
+        self.root.entry_offaxis_angle =\
+            ttk.Entry(self.root.frame_inputs, width=10,
+                      textvariable=self.root.offaxis_angle, validate='key',
+                      validatecommand=(self.vcmd, '%P'))
         self.root.entry_offaxis_angle.grid(column=1, row=1, sticky=W)
         self.root.entry_offaxis_angle.insert(0, '0')
 
@@ -75,11 +73,10 @@ class Rec:
         self.root.label_frequency.grid(column=0, row=2, sticky=E, padx=5)
         #   Entry for frequency
         self.root.frequency = StringVar()
-        self.root.entry_frequency = ttk.Entry(self.root.frame_inputs,
-                                              width=10,
-                                              textvariable=self.root.frequency,
-                                              validate='all',
-                                              validatecommand=(vcmd, '%P'))
+        self.root.entry_frequency =\
+            ttk.Entry(self.root.frame_inputs, width=10,
+                      textvariable=self.root.frequency, validate='all',
+                      validatecommand=(self.vcmd, '%P'))
         self.root.entry_frequency.grid(column=1, row=2, sticky=W)
         self.root.entry_frequency.insert(0, '14')
 
@@ -89,11 +86,10 @@ class Rec:
         self.root.label_diameter.grid(column=0, row=3, sticky=E, padx=5)
         #   Entry for diameter
         self.root.diameter = StringVar()
-        self.root.entry_diameter = ttk.Entry(self.root.frame_inputs,
-                                             width=10,
-                                             textvariable=self.root.diameter,
-                                             validate='all',
-                                             validatecommand=(vcmd, '%P'))
+        self.root.entry_diameter =\
+            ttk.Entry(self.root.frame_inputs, width=10,
+                      textvariable=self.root.diameter, validate='all',
+                      validatecommand=(self.vcmd, '%P'))
         self.root.entry_diameter.grid(column=1, row=3, sticky=W)
         self.root.entry_diameter.insert(0, '2')
 
@@ -114,15 +110,14 @@ class Rec:
         self.root.frame_main_out.grid(column=0, row=0)
 
         #   Label for co-polarisation off-axis gain entry
-        self.root.label_offaxis_gain = ttk.Label(self.root.frame_main_out,
-                                                 text=('Ко-пол. внеосевой коэф'
-                                                       'фициент усиления (G), '
-                                                       'дБ'))
+        self.root.label_offaxis_gain = \
+            ttk.Label(self.root.frame_main_out,
+                      text='Ко-пол. внеосевой коэффициент усиления (G), дБ')
         self.root.label_offaxis_gain.grid(column=0, row=0, sticky=E, padx=5,
                                           pady=(0, 10))
         #   Entry for co-polarisation off-axis gain
-        self.root.entry_offaxis_gain = ttk.Entry(self.root.frame_main_out,
-                                                 width=10)
+        self.root.entry_offaxis_gain = \
+            ttk.Entry(self.root.frame_main_out, width=10)
         self.root.entry_offaxis_gain.grid(column=1, row=0, sticky=W,
                                           pady=(0, 10))
 
@@ -188,6 +183,9 @@ class Rec:
             self.root.frequency.set(13)
             self.root.diameter.set(2.7)
             # self.root.eta.set(0.7)
+        elif rec == 'S.1855':
+            from s1855 import S1855
+            S1855(self.root)
         elif rec == 'S.465-6':
             from s465 import S465
             S465(self.root)

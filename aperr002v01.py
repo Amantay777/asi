@@ -8,36 +8,36 @@ class APERR002V01(AP8):
     def input_widgets(self):
         super().input_widgets()
         #   Label for eta entry
-        self.root.label_eta = ttk.Label(self.root.frame_inputs,
-                                        text=('Коэфф. использ. поверхн. '
-                                              'антенны (\u03B7)'))
+        self.root.label_eta = \
+            ttk.Label(self.root.frame_inputs,
+                      text='Коэфф. использ. поверхн. антенны (\u03B7)')
         self.root.label_eta.grid(column=0, row=4, sticky=E, padx=5)
         #   Entry for eta
         self.root.eta = StringVar()
-        self.root.entry_eta = ttk.Entry(self.root.frame_inputs, width=10,
-                                        textvariable=self.root.eta,
-                                        validate='key',
-                                        validatecommand=(self.eta_vcmd, '%P'))
+        self.root.entry_eta = \
+            ttk.Entry(self.root.frame_inputs, width=10,
+                      textvariable=self.root.eta, validate='key',
+                      validatecommand=(self.eta_vcmd, '%P'))
         self.root.entry_eta.grid(column=1, row=4, sticky=W)
         self.root.entry_eta.insert(0, '0.7')
 
-        self.root.label_coeffa = ttk.Label(self.root.frame_inputs,
-                                           text='Коэффициент A')
+        self.root.label_coeffa = \
+            ttk.Label(self.root.frame_inputs, text='Коэффициент A')
         self.root.label_coeffa.grid(column=0, row=5, sticky=E, padx=5)
 
         self.root.coeffa_frame = ttk.Frame(self.root.frame_inputs)
         self.root.coeffa_frame.grid(column=1, row=5)
 
         self.root.coeffa = IntVar()
-        self.root.radio_29 = ttk.Radiobutton(self.root.coeffa_frame,
-                                             text='29', value=29,
-                                             variable=self.root.coeffa)
+        self.root.radio_29 = \
+            ttk.Radiobutton(self.root.coeffa_frame, text='29', value=29,
+                            variable=self.root.coeffa)
         self.root.radio_29.grid(column=0, row=0)
         self.root.radio_29.invoke()
 
-        self.root.radio_32 = ttk.Radiobutton(self.root.coeffa_frame,
-                                             text='32', value=32,
-                                             variable=self.root.coeffa)
+        self.root.radio_32 = \
+            ttk.Radiobutton(self.root.coeffa_frame, text='32', value=32,
+                            variable=self.root.coeffa)
         self.root.radio_32.grid(column=1, row=0)
 
     def get_inputs(self):
@@ -51,8 +51,7 @@ class APERR002V01(AP8):
         self.gmax_calc()
         self.phib_calc()
         self.g1_calc()
-        self.a_p[2] = self.gmaxr
-        self.a_p[3] = self.g1r
+        self.a_p[2:4] = [self.gmaxr, self.g1r]
         self.a_p[6] = self.phi_br
         return self.a_p
 

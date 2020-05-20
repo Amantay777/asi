@@ -1,8 +1,6 @@
 from ap3097 import AP3097
 from ap8 import AP8
 from math import log10, sqrt, pi
-from tkinter import Tk, E, W, StringVar, IntVar, END
-from tkinter import ttk
 
 
 class AP30B(AP3097):
