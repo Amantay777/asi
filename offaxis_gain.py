@@ -43,8 +43,8 @@ class Rec:
                                               width=20,
                                               textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
-            ('AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01', 'BO.1213',
-             'BO.1900', 'M.694-1', 'S.1855', 'S.465-6', 'S.580-6')
+            ('AP30-77', 'AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01',
+             'BO.1213', 'BO.1900', 'M.694-1', 'S.1855', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
 
@@ -156,6 +156,9 @@ class Rec:
         elif rec == 'AP7':
             from ap7 import AP7
             AP7(self.root)
+        elif rec == 'AP30-77':
+            from ap3077 import AP3077
+            AP3077(self.root)
         elif rec == 'AP30-97':
             from ap3097 import AP3097
             AP3097(self.root)

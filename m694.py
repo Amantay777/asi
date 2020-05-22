@@ -1,5 +1,5 @@
 from ap8 import AP8
-from math import log10, sqrt
+from math import log10
 
 
 class M694(AP8):

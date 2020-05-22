@@ -126,15 +126,15 @@ class AP8(Rec):
         return self.m_p
 
     def test(self):
-        assert self.calculate([0, 14, 3]) == [50.63, 21.41, 140.1, 50.63, 34.2,
-                                              0.58, 0.82, 48]
+        assert self.calculate([0, 14, 3]) ==\
+               [50.63, 21.41, 140.1, 50.63, 34.2, 0.58, 0.82, 48]
         assert self.calculate([0.3, 14, 3])[0] == 46.21
         assert self.calculate([0.7, 14, 3])[0] == 34.2
         assert self.calculate([20, 14, 3])[0] == -0.53
         assert self.calculate([100, 14, 3])[0] == -10
         assert self.calculate([200, 14, 3])[0] == '\u03C6 > 180 !'
-        assert self.calculate([0, 14, 1]) == [41.09, 21.41, 46.7, 41.09, 27.04,
-                                              1.61, 2.14, 48]
+        assert self.calculate([0, 14, 1]) == \
+               [41.09, 21.41, 46.7, 41.09, 27.04, 1.61, 2.14, 48]
         assert self.calculate([0.8, 14, 1])[0] == 37.6
         assert self.calculate([2, 14, 1])[0] == 27.04
         assert self.calculate([20, 14, 1])[0] == 2.78
