@@ -18,6 +18,7 @@ class AP30B(AP3097):
             pass
 
     def add_params(self):
+        self.coeffa = 0
         self.a_p = AP8.add_params(self)
         self.gmax = 10 * log10(self.eta * (pi*self.dw) ** 2)
         self.gmaxr = round(self.gmax, 2)

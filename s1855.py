@@ -102,13 +102,14 @@ class S1855(APERR002V01):
         self.root.entry_phimin.insert(0, self.phi_minr)
 
     def add_params(self):
+        self.coeffa = 0
         super().add_params()
         self.k_calc()
         self.dtheta_calc()
-        self.phir_calc()
+        self.phir2_calc()
         self.phi1_calc()
         self.phimin_calc()
-        self.g1_calc()
+        self.g12_calc()
         self.phim2_calc()
         self.phib_calc()
         self.a_p[3:] = [self.g1r, self.phi_mr, self.phi_rr, self.phi_br,
@@ -125,7 +126,7 @@ class S1855(APERR002V01):
                             cos(self.theta) ** 2)
         self.d_thetar = round(self.d_theta, 2)
 
-    def phir_calc(self):
+    def phir2_calc(self):
         self.phi_r = 15.85 * (self.d_theta / self.w) ** (-0.6)
         self.phi_rr = round(self.phi_r, 2)
 
@@ -137,7 +138,7 @@ class S1855(APERR002V01):
         self.phi_min = max(self.phi_r, 118 * (self.d_theta / self.w) ** (-1.06))
         self.phi_minr = round(self.phi_min, 2)
 
-    def g1_calc(self):
+    def g12_calc(self):
         self.g1 = 29 - 25 * log10(self.phi_r) + 3 * sin(self.theta) ** 2
         self.g1r = round(self.g1, 2)
 

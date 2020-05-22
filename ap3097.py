@@ -45,9 +45,9 @@ class AP3097(APERR002V01):
         self.root.entry_z44phi0.grid(column=1, row=8, sticky=W)
 
         #   Label for φ0
-        self.root.label_phi0 = ttk.Label(self.root.frame_add_out,
-                                         text=('Внеосевой угол \u03C60, '
-                                               '\u00b0'))
+        self.root.label_phi0 = \
+            ttk.Label(self.root.frame_add_out,
+                      text='Ширина луча по уровню -3 дБ (\u03C60), \u00b0')
         self.root.label_phi0.grid(column=0, row=9, sticky=E, padx=5)
         #   Entry for φ0
         self.root.entry_phi0 = ttk.Entry(self.root.frame_add_out, width=10)
@@ -108,9 +108,10 @@ class AP3097(APERR002V01):
         return super().calculate(inputs)
 
     def add_params(self):
+        self.coeffa = 0
         super().add_params()
         self.phir_calc()
-        self.g1_calc()
+        self.g12_calc()
         self.phim_calc()
         self.phib_calc()
         self.xap_calc()
@@ -123,7 +124,7 @@ class AP3097(APERR002V01):
         self.phi_r = 95 * self.w / self.d
         self.phi_rr = round(self.phi_r, 2)
 
-    def g1_calc(self):
+    def g12_calc(self):
         self.g1 = 29 - 25 * log10(self.phi_r)
         self.g1r = round(self.g1, 2)
 
@@ -164,8 +165,8 @@ class AP3097(APERR002V01):
         elif self.z44phi_0 <= self.phi < self.phi_0:
             self.gx = self.gmax - 17
         elif self.phi_0 <= self.phi < self.phi_1:
-            self.gx = self.gmax - 17 + self.s * ((self.phi - self.phi_0) /
-                                                 (self.phi_1 - self.phi_0))
+            self.gx = self.gmax - 17 + self.s * (abs((self.phi - self.phi_0) /
+                                                 (self.phi_1 - self.phi_0)))
         elif self.phi_1 <= self.phi < self.phi_2:
             self.gx = 21 - 25 * log10(self.phi)
         elif self.phi_2 <= self.phi < 70:
