@@ -8,7 +8,7 @@
 # Copyright:   (c) - 2020
 # Licence:     <your licence>
 # -----------------------------------------------------------------------------
-from tkinter import Tk, E, W, StringVar, IntVar, END
+from tkinter import Tk, E, W, StringVar, END
 from tkinter import ttk
 
 
@@ -29,9 +29,8 @@ class Rec:
 
     def input_widgets(self):
         #   Frame for input data
-        self.root.frame_inputs = ttk.LabelFrame(self.root,
-                                                text='Входные данные:',
-                                                labelanchor="n")
+        self.root.frame_inputs =\
+            ttk.LabelFrame(self.root, text='Входные данные:', labelanchor="n")
         self.root.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
         #   Label for recommendations combobox
         self.root.label_rec = ttk.Label(self.root.frame_inputs,
@@ -39,24 +38,22 @@ class Rec:
         self.root.label_rec.grid(column=0, row=0, sticky=E, padx=5)
         #   Combobox for recommendations
         self.root.rec = StringVar()
-        self.root.combobox_rec = ttk.Combobox(self.root.frame_inputs,
-                                              width=20,
-                                              textvariable=self.root.rec)
+        self.root.combobox_rec =\
+            ttk.Combobox(self.root.frame_inputs, width=20,
+                         textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
             ('AP30-77', 'AP30-97', 'AP30B', 'AP7', 'AP8', 'APERR002V01',
              'BO.1213', 'BO.1900', 'M.694-1', 'S.1855', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
-
         #   Register entry check function
         self.vcmd = self.root.register(self.check_entry)
         #   Register eta entry check function
         self.eta_vcmd = self.root.register(self.check_eta_entry)
-
         #   Label for off-axis angle entry
-        self.root.label_offaxis_angle = ttk.Label(self.root.frame_inputs,
-                                                  text=('Внеосевой угол'
-                                                        '(\u03C6), \u00b0'))
+        self.root.label_offaxis_angle =\
+            ttk.Label(self.root.frame_inputs,
+                      text='Внеосевой угол(\u03C6), \u00b0')
         self.root.label_offaxis_angle.grid(column=0, row=1, sticky=E, padx=5)
         #   Entry for off-axis angle
         self.root.offaxis_angle = StringVar()
@@ -66,7 +63,6 @@ class Rec:
                       validatecommand=(self.vcmd, '%P'))
         self.root.entry_offaxis_angle.grid(column=1, row=1, sticky=W)
         self.root.entry_offaxis_angle.insert(0, '0')
-
         #   Label for frequency entry
         self.root.label_frequency = ttk.Label(self.root.frame_inputs,
                                               text='Частота (f), ГГц')
@@ -79,7 +75,6 @@ class Rec:
                       validatecommand=(self.vcmd, '%P'))
         self.root.entry_frequency.grid(column=1, row=2, sticky=W)
         self.root.entry_frequency.insert(0, '14')
-
         #   Label for diameter entry
         self.root.label_diameter = ttk.Label(self.root.frame_inputs,
                                              text='Диаметр антенны (D), м')
