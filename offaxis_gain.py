@@ -42,7 +42,7 @@ class Rec:
             ttk.Combobox(self.root.frame_inputs, width=20,
                          textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
-            ('AP30-77', 'AP30-97', 'AP30B', 'AP30R2', 'AP7', 'AP8',
+            ('AP30-77', 'AP30-97', 'AP30AR13', 'AP30B', 'AP30R2', 'AP7', 'AP8',
              'APERR002V01', 'BO.1213', 'BO.1900', 'M.694-1', 'S.1855',
              'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
@@ -146,13 +146,7 @@ class Rec:
         offaxis_angle = self.root.offaxis_angle.get()
         frequency = self.root.frequency.get()
         diameter = self.root.diameter.get()
-        if rec == 'AP8':
-            from ap8 import AP8
-            AP8(self.root)
-        elif rec == 'AP7':
-            from ap7 import AP7
-            AP7(self.root)
-        elif rec == 'AP30-77':
+        if rec == 'AP30-77':
             from ap3077 import AP3077
             AP3077(self.root)
         elif rec == 'AP30-97':
@@ -161,15 +155,9 @@ class Rec:
             self.root.frequency.set(12.1)
             self.root.diameter.set(0.6)
             self.root.eta.set(0.65)
-        elif rec == 'BO.1213':
-            from bo1213 import BO1213
-            BO1213(self.root)
-            self.root.frequency.set(11.7)
-            self.root.diameter.set(0.6)
-            self.root.eta.set(0.65)
-        elif rec == 'BO.1900':
-            from bo1900 import BO1900
-            BO1900(self.root)
+        elif rec == 'AP30AR13':
+            from ap30ar13 import AP30AR13
+            AP30AR13(self.root)
         elif rec == 'AP30B':
             from ap30b import AP30B
             AP30B(self.root)
@@ -179,12 +167,27 @@ class Rec:
         elif rec == 'AP30R2':
             from ap30r2 import AP30R2
             AP30R2(self.root)
+        elif rec == 'AP7':
+            from ap7 import AP7
+            AP7(self.root)
+        elif rec == 'AP8':
+            from ap8 import AP8
+            AP8(self.root)
         elif rec == 'APERR002V01':
             from aperr002v01 import APERR002V01
             APERR002V01(self.root)
             self.root.frequency.set(13)
             self.root.diameter.set(2.7)
             # self.root.eta.set(0.7)
+        elif rec == 'BO.1213':
+            from bo1213 import BO1213
+            BO1213(self.root)
+            self.root.frequency.set(11.7)
+            self.root.diameter.set(0.6)
+            self.root.eta.set(0.65)
+        elif rec == 'BO.1900':
+            from bo1900 import BO1900
+            BO1900(self.root)
         elif rec == 'M.694-1':
             from m694 import M694
             M694(self.root)
