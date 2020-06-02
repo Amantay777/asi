@@ -42,9 +42,9 @@ class Rec:
             ttk.Combobox(self.root.frame_inputs, width=20,
                          textvariable=self.root.rec)
         self.root.combobox_rec['values'] = \
-            ('AP30-77', 'AP30-97', 'AP30AR13', 'AP30B', 'AP30R2', 'AP7', 'AP8',
-             'APERR002V01', 'BO.1213', 'BO.1900', 'M.694-1', 'S.1855',
-             'S.465-6', 'S.580-6')
+            ('AP30-77', 'AP30-97', 'AP30AR13', 'AP30AR13-97', 'AP30B',
+             'AP30R2', 'AP7', 'AP8', 'APERR002V01', 'BO.1213', 'BO.1900',
+             'M.694-1', 'S.1855', 'S.465-6', 'S.580-6')
         self.root.combobox_rec.grid(column=1, row=0, sticky=W)
         self.root.combobox_rec.bind("<<ComboboxSelected>>", self.check_rec)
         #   Register entry check function
@@ -158,6 +158,9 @@ class Rec:
         elif rec == 'AP30AR13':
             from ap30ar13 import AP30AR13
             AP30AR13(self.root)
+        elif rec == 'AP30AR13-97':
+            from ap30ar1397 import AP30AR1397
+            AP30AR1397(self.root)
         elif rec == 'AP30B':
             from ap30b import AP30B
             AP30B(self.root)
