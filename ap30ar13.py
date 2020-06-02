@@ -1,8 +1,21 @@
 from ap3077 import AP3077
 from math import log10
+from tkinter import END
 
 
 class AP30AR13(AP3077):
+    def phi0_widgets(self):
+        pass
+
+    def set_outputs(self, event):
+        try:
+            super().set_outputs(event)
+        except:
+            pass
+        #   Set Gx
+        self.root.entry_offaxis_gain_x.delete(0, END)
+        self.root.entry_offaxis_gain_x.insert(0, self.gxr)
+
     def offaxis_gain(self):
         super().offaxis_gain()
         if 0 <= self.phi <= 0.1:
