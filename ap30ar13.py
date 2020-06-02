@@ -7,14 +7,8 @@ class AP30AR13(AP3077):
     def phi0_widgets(self):
         pass
 
-    def set_outputs(self, event):
-        try:
-            super().set_outputs(event)
-        except:
-            pass
-        #   Set Gx
-        self.root.entry_offaxis_gain_x.delete(0, END)
-        self.root.entry_offaxis_gain_x.insert(0, self.gxr)
+    def set_phi0(self):
+        pass
 
     def offaxis_gain(self):
         super().offaxis_gain()

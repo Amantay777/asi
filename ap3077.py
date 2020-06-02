@@ -46,13 +46,19 @@ class AP3077(Rec):
 
     def set_outputs(self, event):
         super().set_outputs(event)
-        #   Set Gmax
+        self.set_gmax()
+        self.set_phi0()
+        self.set_gx()
+
+    def set_gmax(self):
         self.root.entry_gmax.delete(0, END)
         self.root.entry_gmax.insert(0, self.gmaxr)
-        #   Set φ0
+
+    def set_phi0(self):
         self.root.entry_phi0.delete(0, END)
         self.root.entry_phi0.insert(0, self.phi_0r)
-        #   Set Gx
+
+    def set_gx(self):
         self.root.entry_offaxis_gain_x.delete(0, END)
         self.root.entry_offaxis_gain_x.insert(0, self.gxr)
 
