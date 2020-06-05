@@ -46,13 +46,19 @@ class AP3077(Rec):
 
     def set_outputs(self, event):
         super().set_outputs(event)
-        #   Set Gmax
+        self.set_gmax()
+        self.set_phi0()
+        self.set_gx()
+
+    def set_gmax(self):
         self.root.entry_gmax.delete(0, END)
         self.root.entry_gmax.insert(0, self.gmaxr)
-        #   Set φ0
+
+    def set_phi0(self):
         self.root.entry_phi0.delete(0, END)
         self.root.entry_phi0.insert(0, self.phi_0r)
-        #   Set Gx
+
+    def set_gx(self):
         self.root.entry_offaxis_gain_x.delete(0, END)
         self.root.entry_offaxis_gain_x.insert(0, self.gxr)
 
@@ -86,7 +92,7 @@ class AP3077(Rec):
             self.g = '\u03C6 > 180 !'
         self.gr = round(self.g, 2) if type(self.g) == float else self.g
         # Cross-polar. off-axis gain
-        if 0 <= self.phi < 0.25 * self.phi_0:
+        if 0 <= self.phi <= 0.25 * self.phi_0:
             self.gx = self.gmax - 25
         elif 0.25 * self.phi_0 < self.phi <= 0.44 * self.phi_0:
             self.gx = self.gmax - 30 - \
