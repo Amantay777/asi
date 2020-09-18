@@ -1,5 +1,5 @@
 from s465 import S465
-from offaxis_gain import Rec
+from asi import Rec
 from math import log10, sqrt, pi
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk

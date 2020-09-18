@@ -1,4 +1,4 @@
-from offaxis_gain import Rec
+from asi import Rec
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
 from math import log10, sqrt, pi
