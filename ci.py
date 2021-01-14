@@ -25,12 +25,13 @@ class CI(CN):
 
     def upOutputs(self):
         CN.upOutputs(self)
-        oLabels = ['d\', км', 'ls\', дБ', 'C/Iup, дБ', 'I/Nup, дБ']
+        oLabels = ['d\', км', 'ls\', дБ', 'C/Iup, дБ', 'I/Nup, дБ', 'C/(N+I)up, дБ']
         oDescs = ['Расстояние между спутником и ЗС, создающей помехи',
                   'Потери помехи в свободном пространстве',
                   'Отношение несущая/помеха на линии вверх',
-                  'Отношение помеха/шум на линии вверх']
-        for i in range(4):
+                  'Отношение помеха/шум на линии вверх',
+                  'Отношение несущая/(шум+помеха) на линии вверх']
+        for i in range(5):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column=0, row=i+4, sticky=E, padx=5)
             desc = ttk.Label(self.frame_outputs, text=oDescs[i])
@@ -51,25 +52,23 @@ class CI(CN):
         disti = 42644 * (1 - 0.2954 * cos(radians(esLati)) *
                               cos(radians(abs(esLongi - self.satLong)))) ** 0.5
         lsi = 32.4 + 20 * log10(self.freq) + 20 * log10(disti)
-        self.CIUp = 10 * log10(self.p1) - 10 * log10(self.b * 10 ** 6) + self.g1 + self.g2 - \
-                  self.ls - (10 * log10(p1i) - 10 * log10(bi * 10 ** 6) +
-                             g1i + g2i - lsi)
-        self.INUp = 10 * log10(p1i) - 10 * log10(bi * 10 ** 6) + g1i + g2i - lsi - \
-                  10*log10(1.38*10**-23) - 10*log10(self.ts)
+        C = 10 * log10(self.p1) - 10 * log10(self.b * 10 ** 6) + self.g1 + self.g2 - self.ls
+        I = 10 * log10(p1i) - 10 * log10(bi * 10 ** 6) + g1i + g2i - lsi
+        N =  10*log10(1.38*10**-23) + 10*log10(self.ts)
+        NpI = 10*log10(10**(N/10) + 10**(I/10))
+        self.CIUp = C - I
+        self.INUp = I - N
+        self.CNIUp = C - NpI
 
         cir = round(self.CIUp, 2)
         distir = round(disti)
         lsir = round(lsi, 2)
         inr = round(self.INUp, 2)
-
-        self.upOEntries[4].delete(0, END)
-        self.upOEntries[4].insert(0, distir)
-        self.upOEntries[5].delete(0, END)
-        self.upOEntries[5].insert(0, lsir)
-        self.upOEntries[6].delete(0, END)
-        self.upOEntries[6].insert(0, cir)
-        self.upOEntries[7].delete(0, END)
-        self.upOEntries[7].insert(0, inr)
+        cnir = round(self.CNIUp, 2)
+        outputs = [distir,lsir,cir,inr,cnir]
+        for i in range(4,9):
+            self.upOEntries[i].delete(0, END)
+            self.upOEntries[i].insert(0,outputs[i-4])
 
     def downInputs(self):
         CN.downInputs(self)
@@ -93,12 +92,13 @@ class CI(CN):
 
     def downOutputs(self):
         CN.downOutputs(self)
-        oLabels = ['d\', км', 'ls\', дБ', 'C/Idown, дБ', 'I/Ndown, дБ']
+        oLabels = ['d\', км', 'ls\', дБ', 'C/Idown, дБ', 'I/Ndown, дБ', 'C/(N+I)down, дБ']
         oDescs = ['Расстояние между спутником, создающим помехи, и ЗС',
                   'Потери помехи в свободном пространстве',
                   'Отношение несущая/помеха на линии вниз',
-                  'Отношение помеха/шум на линии вниз']
-        for i in range(4):
+                  'Отношение помеха/шум на линии вниз',
+                  'Отношение несущая/(шум+помеха) на линии вниз']
+        for i in range(5):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column=0, row=i+4, sticky=E, padx=5)
             desc = ttk.Label(self.frame_outputs, text=oDescs[i])
@@ -118,25 +118,24 @@ class CI(CN):
         disti = 42644 * (1 - 0.2954 * cos(radians(self.esLat)) *
                               cos(radians(abs(self.esLong - satLongi)))) ** 0.5
         lsi = 32.4 + 20 * log10(self.freq) + 20 * log10(disti)
-        self.CIDown = 10 * log10(self.p1) - 10 * log10(self.b * 10 ** 6) + self.g1 + self.g2 - \
-                  self.ls - (10 * log10(p1i) - 10 * log10(bi * 10 ** 6) +
-                             g1i + g2i - lsi)
-        self.INDown = 10 * log10(p1i) - 10 * log10(bi * 10 ** 6) + g1i + g2i - lsi - \
-                       10 * log10(1.38 * 10 ** -23) - 10 * log10(self.te)
+        C = 10 * log10(self.p1) - 10 * log10(self.b * 10 ** 6) + self.g1 + self.g2 - self.ls
+        I = 10 * log10(p1i) - 10 * log10(bi * 10 ** 6) + g1i + g2i - lsi
+        N =  10 * log10(1.38 * 10 ** -23) + 10 * log10(self.te)
+        NpI = 10*log10(10**(N/10) + 10**(I/10))
+        self.CIDown = C - I
+        self.INDown = I - N
+        self.CNIDown = C - NpI
 
         cir = round(self.CIDown, 2)
         distir = round(disti)
         lsir = round(lsi, 2)
         inr = round(self.INDown, 2)
+        cnir = round(self.CNIDown, 2)
 
-        self.downOEntries[4].delete(0, END)
-        self.downOEntries[4].insert(0, distir)
-        self.downOEntries[5].delete(0, END)
-        self.downOEntries[5].insert(0, lsir)
-        self.downOEntries[6].delete(0, END)
-        self.downOEntries[6].insert(0, cir)
-        self.downOEntries[7].delete(0, END)
-        self.downOEntries[7].insert(0, inr)
+        outputs = [distir, lsir, cir, inr, cnir]
+        for i in range(4, 9):
+            self.downOEntries[i].delete(0, END)
+            self.downOEntries[i].insert(0, outputs[i - 4])
 
     def totalWidgets(self):
         CN.totalWidgets(self)
