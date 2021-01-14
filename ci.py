@@ -143,12 +143,26 @@ class CI(CN):
         self.CITEntry = ttk.Entry(self.total, width=10)
         self.CITEntry.grid(column=0, row=2, sticky=W)
 
-        desc1 = 'Рассчитать суммарные C/N и C/I'
-        desc2 = 'Суммарное C/I, дБ'
+        self.INTEntry = ttk.Entry(self.total, width=10)
+        self.INTEntry.grid(column=0, row=3, sticky=W)
+
+        self.CNITEntry = ttk.Entry(self.total, width=10)
+        self.CNITEntry.grid(column=0, row=4, sticky=W)
+
+        desc1 = 'Рассчитать суммарные C/N, C/I,\n I/N и C/N+I'
         self.button_calculate.config(text=desc1)
 
+        desc2 = 'Суммарное C/I, дБ'
         label = ttk.Label(self.total, text=desc2)
         label.grid(column=1, row=2, sticky=W)
+
+        desc3 = 'Суммарное I/N, дБ'
+        label = ttk.Label(self.total, text=desc3)
+        label.grid(column=1, row=3, sticky=W)
+
+        desc4 = 'Суммарное C/N+I, дБ'
+        label = ttk.Label(self.total, text=desc4)
+        label.grid(column=1, row=4, sticky=W)
 
     def totalProcess(self, event):
         CN.totalProcess(self, event)
@@ -156,5 +170,19 @@ class CI(CN):
         self.ciTotal = -10 * log10(10 ** (-self.CIUp / 10) + 10 ** (-self.CIDown / 10 ))
         ciTotalr = round(self.ciTotal, 2)
 
+        self.inTotal = -10 * log10(
+            10 ** (-self.INUp / 10) + 10 ** (-self.INDown / 10))
+        inTotalr = round(self.inTotal, 2)
+
+        self.cniTotal = -10 * log10(
+            10 ** (-self.CNIUp / 10) + 10 ** (-self.CNIDown / 10))
+        cniTotalr = round(self.cniTotal, 2)
+
         self.CITEntry.delete(0, END)
         self.CITEntry.insert(0, ciTotalr)
+
+        self.INTEntry.delete(0, END)
+        self.INTEntry.insert(0, inTotalr)
+
+        self.CNITEntry.delete(0, END)
+        self.CNITEntry.insert(0, cniTotalr)
