@@ -1,5 +1,6 @@
 from aperr002v01 import APERR002V01
 from ap8 import AP8
+from asi import Rec
 from math import log10, sqrt, sin, cos
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
@@ -188,3 +189,10 @@ class S1855(APERR002V01):
         self.g = g
         self.gr = round(self.g, 2) if type(self.g) == float else self.g
         return [self.gr]
+
+    def ref_info(self, txt):
+        txt = 'Альтернативная эталонная диаграмма направленности для антенн' \
+              ' земных станций, используемых со спутниками на геостационарной' \
+              ' орбите в целях применения при координации и/или оценке помех' \
+              ' в диапазоне частот от 2 до 31 ГГц'
+        Rec.ref_info(self, txt)

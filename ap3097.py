@@ -2,6 +2,7 @@ from aperr002v01 import APERR002V01
 from math import log10, sqrt, pi
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
+from asi import Rec
 
 
 class AP3097(APERR002V01):
@@ -194,3 +195,8 @@ class AP3097(APERR002V01):
         assert self.calculate([200, 12.1, 0.6, 0.65])[:2] == ['\u03C6 > 180 !',
                                                               '\u03C6 > 180 !']
 
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны земной станции ' \
+              'Приложения 30 для Районов 1 и 3 (ВКР-97). Частота фиксирована ' \
+              'на 12.1 ГГц.'
+        Rec.ref_info(self, txt)

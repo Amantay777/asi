@@ -5,6 +5,7 @@ from tkinter import ttk
 
 
 class AP8(Rec):
+
     def output_widgets(self):
         super().output_widgets()
         #   Label for Gmax entry
@@ -140,3 +141,8 @@ class AP8(Rec):
         assert self.calculate([20, 14, 1])[0] == 2.78
         assert self.calculate([100, 14, 1])[0] == -6.69
         assert self.calculate([200, 14, 1])[0] == '\u03C6 > 180 !'
+
+    def ref_info(self, txt):
+        txt = 'Диаграммы направленности антенн земных станций, которыми ' \
+              'надлежит пользоваться, если сведения о них не опубликованы'
+        super().ref_info(txt)

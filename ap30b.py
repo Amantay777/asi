@@ -1,6 +1,7 @@
 from ap3097 import AP3097
 from ap8 import AP8
 from math import log10, sqrt, pi
+from asi import Rec
 
 
 class AP30B(AP3097):
@@ -49,3 +50,8 @@ class AP30B(AP3097):
         assert self.calculate([100, 13, 2.7, 0.7])[0] == -10
         assert self.calculate([200, 13, 2.7, 0.7])[0] == '\u03C6 > 180 !'
 
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны земной ' \
+              'станции для Плана фиксированной спутниковой службы ' \
+              '(Приложение 30B)'
+        Rec.ref_info(self, txt)

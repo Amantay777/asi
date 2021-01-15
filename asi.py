@@ -1,18 +1,17 @@
 # -----------------------------------------------------------------------------
 # Name:        ASI
-# Purpose:
+# Purpose:     Satellite interference calculations
 #
-# Author:      -
+# Author:      AI
 #
 # Created:     15.04.2020
 # Copyright:   (c) - 2020
 # Licence:     <your licence>
 # -----------------------------------------------------------------------------
-from tkinter import Tk, E, W, StringVar, END
+from tkinter import Tk, E, W, StringVar, END, N, Text
 from tkinter import ttk
 from eirp import EIRP
 from sd import SD
-from cn import CN
 from ci import CI
 
 
@@ -43,6 +42,8 @@ class Rec:
         self.btn_calc()
         self.output_widgets()
         self.test()
+        self.txt = "Здесь будет отображаться справочная информация"
+        self.ref_info(self.txt)
 
     def input_widgets(self):
         #   Frame for input data
@@ -337,6 +338,15 @@ class Rec:
     def test(self):
         pass
 
+    def ref_info(self, txt):
+        self.root.refinfo_frame = ttk.LabelFrame(self.root,
+                                text='Справочная информация', labelanchor="n")
+        self.root.refinfo_frame.grid(column=1, row=0, padx=5, pady=5,
+                                     rowspan = 3, sticky = N)
+
+        self.root.T = Text(self.root.refinfo_frame, height=20, width=20)
+        self.root.T.grid(column=0, row=0, padx=5, pady=5)
+        self.root.T.insert(END, txt)
 
 if __name__ == '__main__':
     Root().mainloop()

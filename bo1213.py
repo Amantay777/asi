@@ -1,7 +1,5 @@
 from ap3097 import AP3097
-from math import log10, sqrt, pi
-from tkinter import Tk, E, W, StringVar, IntVar, END
-from tkinter import ttk
+from asi import Rec
 
 
 class BO1213(AP3097):
@@ -19,3 +17,8 @@ class BO1213(AP3097):
             [self.gr, self.gxr] = ['D/\u03BB < 11 !', 'D/\u03BB < 11 !']
         return self.m_p
 
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности приемной антенны земной ' \
+              'станции для радиовещательной спутниковой службы в полосе ' \
+              'частот 11,7−12,75 ГГц'
+        Rec.ref_info(self, txt)

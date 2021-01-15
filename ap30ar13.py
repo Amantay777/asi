@@ -1,6 +1,6 @@
 from ap3077 import AP3077
 from math import log10
-from tkinter import END
+from asi import Rec
 
 
 class AP30AR13(AP3077):
@@ -34,3 +34,8 @@ class AP30AR13(AP3077):
         self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
         self.m_p = [self.gr, self.gxr]
         return self.m_p
+
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны передающей земной ' \
+              'станции для Районов 1 и 3 (ВАКР-Орб-88).'
+        Rec.ref_info(self, txt)

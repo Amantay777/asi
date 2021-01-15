@@ -111,3 +111,9 @@ class AP3077(Rec):
         self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
         self.m_p = [self.gr, self.gxr]
         return self.m_p
+
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны приемной земной ' \
+              'станции для Районов 1 и 3 для индивидуального приема (План ' \
+              'РСС 1977)'
+        super().ref_info(txt)

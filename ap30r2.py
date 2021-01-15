@@ -1,5 +1,6 @@
 from ap3077 import AP3077
 from math import log10
+from asi import Rec
 
 
 class AP30R2(AP3077):
@@ -36,3 +37,8 @@ class AP30R2(AP3077):
         self.gxr = round(self.gx, 2) if type(self.gx) == float else self.gx
         self.m_p = [self.gr, self.gxr]
         return self.m_p
+
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны приемной земной ' \
+              'станции для Района 2 для индивидуального приема.'
+        Rec.ref_info(self, txt)

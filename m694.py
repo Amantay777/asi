@@ -1,5 +1,6 @@
 from ap8 import AP8
 from math import log10
+from asi import Rec
 
 
 class M694(AP8):
@@ -27,3 +28,10 @@ class M694(AP8):
 
     def test(self):
         pass
+
+    def ref_info(self, txt):
+        txt = 'Эталонная диаграмма направленности антенны земной станции для ' \
+              'антенн судовых земных станций с круговыми параболическими ' \
+              'отражателями с диаметрами между 0.8 м и 1.3 м и с рабочим ' \
+              'диапазоном частот примерно 1500-1600 МГц'
+        Rec.ref_info(self, txt)

@@ -1,4 +1,5 @@
 from ap8 import AP8
+from asi import Rec
 from math import log10, sqrt, pi
 from tkinter import Tk, E, W, StringVar, IntVar, END
 from tkinter import ttk
@@ -70,3 +71,8 @@ class APERR002V01(AP8):
     def test(self):
         pass
 
+    def ref_info(self, txt):
+        txt = 'Диаграмма направленности антенны земной станции Приложения 30B, ' \
+              'применимая для D/lambda > 100. Используется для определения ' \
+              'требований по координации и оценки помех в Плане ФСС.'
+        Rec.ref_info(self, txt)

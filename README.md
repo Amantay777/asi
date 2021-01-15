@@ -1,5 +1,6 @@
 # ASI
 Adjacent satellite interference (ASI) calculator: off-axis gain calculator
+Inheritance tree:
 
 0
 Rec

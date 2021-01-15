@@ -1,8 +1,6 @@
 from s465 import S465
 from asi import Rec
 from math import log10, sqrt, pi
-from tkinter import Tk, E, W, StringVar, IntVar, END
-from tkinter import ttk
 
 
 class S580(S465):
@@ -67,3 +65,9 @@ class S580(S465):
         assert self.calculate([27, 14, 1.1, True])[0] == -3.78
         assert self.calculate([49, 14, 1.1, True])[0] == -10
         assert self.calculate([181, 14, 1.1, True])[0] == '\u03C6 > 180 !'
+
+    def ref_info(self, txt):
+        txt = 'Диаграммы направленности для использования в качестве ' \
+              'проектировочных целей для антенн земных станций, работающих с ' \
+              'геостационарными спутниками (Приложение 30B)'
+        Rec.ref_info(self, txt)
