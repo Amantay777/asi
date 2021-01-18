@@ -72,14 +72,14 @@ class CI(CN):
 
     def downInputs(self):
         CN.downInputs(self)
-        iLabels = ['p1\', Вт', 'B\', МГц', 'g1\'(\u03D5), дБ',
+        iLabels = ['p1\', Вт', 'g1\'(\u03D5), дБ', 'B\', МГц',
                    'g2\'(\u03D5), дБ', 'OL\', \u00b0 в.д.']
         iDescs = ['Мощность передатчика спутника, создающего помехи',
-                  'Ширина полосы помехи',
                   'КУ антенны спутника, создающего помехи, в направлении ЗС',
+                  'Ширина полосы помехи',
                   'Внеосевой КУ антенны ЗС в напр. спутника, созд. помехи',
                   'Долгота спутника, создающего помехи']
-        values = ['130', '1', '30', '25', '60']
+        values = ['130', '30', '1', '25', '60']
         for i in range(5):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
             label.grid(column=0, row=i+9, sticky=E, padx=5)
@@ -110,8 +110,8 @@ class CI(CN):
     def downProcess(self, event):
         CN.downProcess(self, event)
         p1i = float(self.downIEntries[9].get())
-        bi = float(self.downIEntries[10].get())
-        g1i = float(self.downIEntries[11].get())
+        g1i = float(self.downIEntries[10].get())
+        bi = float(self.downIEntries[11].get())
         g2i = float(self.downIEntries[12].get())
         satLongi = float(self.downIEntries[13].get())
 

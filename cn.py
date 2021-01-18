@@ -106,14 +106,14 @@ class CN:
         self.frame_inputs = ttk.LabelFrame(self.downlink, text='Входные данные:',
                                     labelanchor="n")
         self.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
-        iLabels = ['p1, Вт', 'B, МГц', 'g1(\u03D5), дБ', 'Dant, м', 'Te, K',
+        iLabels = ['p1, Вт', 'g1(\u03D5), дБ', 'B, МГц', 'Dant, м', 'Te, K',
                    'f, МГц', 'OL, \u00b0 в.д.', 'ESLn, \u00b0 в.д.',
                    'ESLt, \u00b0 с.ш.']
-        iDescs = ['Мощность передатчика спутника', 'Ширина полосы',
-                  'КУ антенны спутника в направлении ЗС', 'Диаметр антенны ЗС',
-                  'Шумовая температура ЗС', 'Частота', 'Долгота спутника',
-                  'Долгота ЗС', 'Широта ЗС']
-        values = ['130', '1', '30', '1.2', '200', '11200', '58.5', '77', '50']
+        iDescs = ['Мощность передатчика спутника',
+                  'КУ антенны спутника в направлении ЗС', 'Ширина полосы',
+                  'Диаметр антенны ЗС', 'Шумовая температура ЗС', 'Частота',
+                  'Долгота спутника', 'Долгота ЗС', 'Широта ЗС']
+        values = ['130', '30', '1', '1.2', '200', '11200', '58.5', '77', '50']
         self.downIEntries = []
         for i in range(9):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
@@ -150,8 +150,8 @@ class CN:
 
     def downProcess(self, event):
         self.p1 = float(self.downIEntries[0].get())
-        self.b = float(self.downIEntries[1].get())
-        self.g1 = float(self.downIEntries[2].get())
+        self.g1 = float(self.downIEntries[1].get())
+        self.b = float(self.downIEntries[2].get())
         self.diam = float(self.downIEntries[3].get())
         self.te = float(self.downIEntries[4].get())
         self.freq = float(self.downIEntries[5].get())
