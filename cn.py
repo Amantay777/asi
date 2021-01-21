@@ -1,4 +1,4 @@
-from tkinter import ttk, E, W, END
+from tkinter import *
 from math import log10, cos, radians
 
 
@@ -20,20 +20,18 @@ class CN:
         self.frame_inputs = ttk.LabelFrame(self.uplink, text='Входные данные:',
                                       labelanchor="n")
         self.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
-        iLabels = ['p1, Вт', 'B, МГц', 'Dant, м', 'g2(\u03D5), дБ', 'Ts, K',
-                  'f, МГц', 'OL, \u00b0 в.д.', 'ESLn, \u00b0 в.д.',
-                  'ESLt, \u00b0 с.ш.']
-        iDescs = ['Мощность передатчика ЗС', 'Ширина полосы',
-                 'Диаметр антенны ЗС', 'КУ антенны спутника в направлении ЗС',
-                 'Шумовая температура спутника', 'Частота', 'Долгота спутника',
-                 'Долгота ЗС', 'Широта ЗС']
+        iLabels = ['Мощность передатчика ЗС, Вт', 'Ширина полосы, МГц',
+                   'Диаметр антенны ЗС, м',
+                   'КУ антенны спутника в направлении ЗС, дБ',
+                   'Шумовая температура спутника, K',
+                   'Частота, МГц', 'Долгота спутника, \u00b0 в.д.',
+                   'Долгота ЗС, \u00b0 в.д.',
+                   'Широта ЗС, \u00b0 с.ш.']
         values = ['2','1','1.2','30','600','14250','58.5','77','50']
         self.upIEntries = []
         for i in range(9):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
             label.grid(column = 0, row = i, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_inputs, text=iDescs[i])
-            desc.grid(column=2, row=i, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_inputs, width=10)
             self.upIEntries.append(entry)
             self.upIEntries[i].grid(column=1, row=i, sticky=W)
@@ -48,16 +46,13 @@ class CN:
         self.frame_outputs = ttk.LabelFrame(self.uplink, text='Рассчитанные параметры:',
                            labelanchor="n")
         self.frame_outputs.grid(column=0, row=2, padx=5, pady=5)
-        oLabels = ['C/Nup, дБ', 'g1, дБ', 'd, км', 'ls, дБ']
-        oDescs = ['Отношение несущая/шум на линии вверх', 'КУ антенны ЗС',
-                 'Расстояние между спутником и ЗС',
-                 'Потери в свободном пространстве']
+        oLabels = ['Отношение несущая/шум на линии вверх, дБ',
+                   'КУ антенны ЗС, дБ', 'Расстояние между спутником и ЗС, км',
+                   'Потери в свободном пространстве, дБ']
         self.upOEntries = []
         for i in range(4):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column = 0, row = i, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_outputs, text=oDescs[i])
-            desc.grid(column=2, row=i, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_outputs, width=10)
             self.upOEntries.append(entry)
             self.upOEntries[i].grid(column=1, row=i, sticky=W)
@@ -106,24 +101,63 @@ class CN:
         self.frame_inputs = ttk.LabelFrame(self.downlink, text='Входные данные:',
                                     labelanchor="n")
         self.frame_inputs.grid(column=0, row=0, padx=5, pady=5)
-        iLabels = ['p1, Вт', 'g1(\u03D5), дБ', 'B, МГц', 'Dant, м', 'Te, K',
-                   'f, МГц', 'OL, \u00b0 в.д.', 'ESLn, \u00b0 в.д.',
-                   'ESLt, \u00b0 с.ш.']
-        iDescs = ['Мощность передатчика спутника',
-                  'КУ антенны спутника в направлении ЗС', 'Ширина полосы',
-                  'Диаметр антенны ЗС', 'Шумовая температура ЗС', 'Частота',
-                  'Долгота спутника', 'Долгота ЗС', 'Широта ЗС']
-        values = ['130', '30', '1', '1.2', '200', '11200', '58.5', '77', '50']
+        iLabels = ['ЭИИМ несущей спутника, дБВт', 'Ширина полосы, МГц',
+                   'Диаметр антенны ЗС, м', 'Шумовая температура ЗС, K',
+                   'Частота, МГц', 'Долгота спутника, \u00b0 в.д.',
+                   'Долгота ЗС, \u00b0 в.д.', 'Широта ЗС, \u00b0 с.ш.']
+        values = ['51.14', '1', '1.2', '200', '11200', '58.5', '77', '50']
+        self.eirpValues = ['130', '30', '51.14']
         self.downIEntries = []
-        for i in range(9):
+        for i in range(8):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
             label.grid(column=0, row=i, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_inputs, text=iDescs[i])
-            desc.grid(column=2, row=i, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_inputs, width=10)
             self.downIEntries.append(entry)
             self.downIEntries[i].grid(column=1, row=i, sticky=W)
             self.downIEntries[i].insert(0, values[i])
+
+        eirpButton = ttk.Button(self.frame_inputs, text='Рассчитать')
+        eirpButton.grid(column=2, row=0, sticky=W, padx=5)
+        eirpButton.bind('<Button-1>', self.eirpWindow)
+
+    def eirpWindow(self, event):  # eirp calculation window
+        eirpwin = Toplevel(self.root)
+        eirpwin.title('ЭИИМ')
+        eirpwin.geometry('370x70-570+100')
+        self.eirpEntries = []
+        eirpLabels = ['Мощность передатчика на несущую спутника, Вт',
+                      'КУ антенны спутника в направлении ЗС, дБi',
+                      'ЭИИМ несущей спутника, дБВт']
+        for i in range(3):
+            label = ttk.Label(eirpwin, text=eirpLabels[i])
+            label.grid(column=0, row=i, sticky=E, padx=5)
+            entry = Entry(eirpwin, width=10)
+            self.eirpEntries.append(entry)
+            self.eirpEntries[i].grid(column=1, row=i, sticky=W)
+            self.eirpEntries[i].insert(0, self.eirpValues[i])
+        self.eirpEntries[0].bind('<KeyRelease>', self.eirpProcess)
+        self.eirpEntries[1].bind('<KeyRelease>', self.eirpProcess)
+        self.eirpEntries[2].config({'bg':'Yellow'})
+
+    def eirpProcess(self, event):
+        try:
+            p1 = float(self.eirpEntries[0].get())
+            g1 = float(self.eirpEntries[1].get())
+            eirp = 10 * log10(p1) + g1
+            self.eirpr = round(eirp, 2)
+
+            self.eirpEntries[2].delete(0, END)
+            self.eirpEntries[2].insert(0, self.eirpr)
+
+            self.downIEntries[0].delete(0, END)
+            self.downIEntries[0].insert(0, self.eirpr)
+
+            self.eirpValues[0] = str(p1 if p1 % 1 else int(p1))
+            self.eirpValues[1] = str(g1 if g1 % 1 else int(g1))
+            self.eirpValues[2] = self.eirpr
+
+        except:
+            pass
 
     def downCalc(self):
         button_calculate = ttk.Button(self.downlink, text='Рассчитать')
@@ -134,37 +168,33 @@ class CN:
         self.frame_outputs = ttk.LabelFrame(self.downlink, text='Рассчитанные параметры:',
                            labelanchor="n")
         self.frame_outputs.grid(column=0, row=2, padx=5, pady=5)
-        oLabels = ['C/Ndown, дБ', 'g2, дБ', 'd, км', 'ls, дБ']
-        oDescs = ['Отношение несущая/шум на линии вниз', 'КУ антенны ЗС',
-                 'Расстояние между спутником и ЗС',
-                 'Потери в свободном пространстве']
+        oLabels = ['Отношение несущая/шум на линии вниз, дБ',
+                   'КУ антенны ЗС, дБi', 'Расстояние между спутником и ЗС, км',
+                   'Потери в свободном пространстве, дБ']
         self.downOEntries = []
         for i in range(4):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column = 0, row = i, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_outputs, text=oDescs[i])
-            desc.grid(column=2, row=i, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_outputs, width=10)
             self.downOEntries.append(entry)
             self.downOEntries[i].grid(column=1, row=i, sticky=W)
 
     def downProcess(self, event):
-        self.p1 = float(self.downIEntries[0].get())
-        self.g1 = float(self.downIEntries[1].get())
-        self.b = float(self.downIEntries[2].get())
-        self.diam = float(self.downIEntries[3].get())
-        self.te = float(self.downIEntries[4].get())
-        self.freq = float(self.downIEntries[5].get())
-        satLong = float(self.downIEntries[6].get())
-        self.esLong = float(self.downIEntries[7].get())
-        self.esLat = float(self.downIEntries[8].get())
+        self.eirp = float(self.downIEntries[0].get())
+        self.b = float(self.downIEntries[1].get())
+        self.diam = float(self.downIEntries[2].get())
+        self.te = float(self.downIEntries[3].get())
+        self.freq = float(self.downIEntries[4].get())
+        satLong = float(self.downIEntries[5].get())
+        self.esLong = float(self.downIEntries[6].get())
+        self.esLat = float(self.downIEntries[7].get())
 
         dw = self.diam * self.freq * 10**6 / 299792458
         self.g2 = 20 * log10(dw) + 7.7
         dist = 42644 * (1 - 0.2954 * cos(radians(self.esLat)) *
                              cos(radians(abs(self.esLong - satLong)))) ** 0.5
         self.ls = 32.4 + 20 * log10(self.freq) + 20 * log10(dist)
-        self.cnDown = 10*log10(self.p1) - 10*log10(self.b*10**6) + self.g1 + self.g2 - \
+        self.cnDown = self.eirp - 10*log10(self.b*10**6) + self.g2 - \
                   10*log10(1.38*10**-23) - 10*log10(self.te) - self.ls
 
         cnr = round(self.cnDown, 2)
@@ -185,16 +215,20 @@ class CN:
         self.total = ttk.LabelFrame(self.root, text='Суммарно (вверх+вниз)', labelanchor="n")
         self.total.grid(column=2, row=0, padx=5, pady=5, sticky='N')
 
-        self.button_calculate = ttk.Button(self.total, text='Рассчитать суммарное C/N')
+        s = ttk.Style()
+        s.configure('CNTR.TButton', anchor=CENTER)
+        self.button_calculate = \
+            ttk.Button(self.total, text='Рассчитать суммарное C/N',
+                       style='CNTR.TButton')
         self.button_calculate.grid(column=0, row=0,columnspan = 2)
         self.button_calculate.bind('<Button-1>', self.totalProcess)
 
         self.CNTEntry = ttk.Entry(self.total, width=10)
-        self.CNTEntry.grid(column=0, row=1, sticky=W)
+        self.CNTEntry.grid(column=1, row=1, sticky=W)
 
         desc = 'Суммарное C/N, дБ'
         label = ttk.Label(self.total, text=desc)
-        label.grid(column=1, row=1, sticky=W)
+        label.grid(column=0, row=1, sticky=E, padx=5)
 
     def totalProcess(self, event):
         self.cnTotal = -10 * log10(10 ** (-self.cnUp / 10) + 10 ** (-self.cnDown / 10 ))

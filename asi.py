@@ -20,6 +20,10 @@ class Root(Tk):
         super().__init__()
         self.title('Расчет ASI')
         nb = ttk.Notebook(self)
+        tab5 = ttk.Frame(nb)
+        nb.add(tab5, text='CI')
+        nb.pack(expan=1, fill='both')
+        CI(tab5)
         tab1 = ttk.Frame(nb)
         nb.add(tab1, text='OAG')
         Rec(tab1)
@@ -29,10 +33,7 @@ class Root(Tk):
         tab3 = ttk.Frame(nb)
         nb.add(tab3, text='SD')
         SD(tab3)
-        tab5 = ttk.Frame(nb)
-        nb.add(tab5, text='CI')
-        nb.pack(expan=1, fill='both')
-        CI(tab5)
+
 
 
 class Rec:

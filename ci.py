@@ -6,18 +6,16 @@ from cn import CN
 class CI(CN):
     def upInputs(self):
         CN.upInputs(self)
-        iLabels = ['p1\', Вт', 'B\', МГц', 'g1\'(\u03D5), дБ', 'g2\'(\u03D5), дБ',
-                   'ESLn\', \u00b0 в.д.', 'ESLt\', \u00b0 с.ш.']
-        iDescs = ['Мощность передатчика ЗС, создающей помехи',
-                  'Ширина полосы помехи', 'Внеосевой КУ антенны ЗС, создающей помехи',
-                  'КУ антенны спутника в напр. ЗС, созд. помехи',
-                  'Долгота ЗС, создающей помехи', 'Широта ЗС, создающей помехи']
+        iLabels = ['Мощность передатчика ЗС, создающей помехи, Вт',
+                   'Ширина полосы помехи, МГц',
+                   'Внеосевой КУ антенны ЗС, создающей помехи, дБ',
+                   'КУ антенны спутника в напр. ЗС, созд. помехи, дБ',
+                   'Долгота ЗС, создающей помехи, \u00b0 в.д.',
+                   'Широта ЗС, создающей помехи, \u00b0 с.ш.']
         values = ['2', '1', '25', '30', '47', '40']
         for i in range(6):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
             label.grid(column=0, row=i+9, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_inputs, text=iDescs[i])
-            desc.grid(column=2, row=i+9, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_inputs, width=10)
             self.upIEntries.append(entry)
             self.upIEntries[i+9].grid(column=1, row=i+9, sticky=W)
@@ -25,17 +23,14 @@ class CI(CN):
 
     def upOutputs(self):
         CN.upOutputs(self)
-        oLabels = ['d\', км', 'ls\', дБ', 'C/Iup, дБ', 'I/Nup, дБ', 'C/(N+I)up, дБ']
-        oDescs = ['Расстояние между спутником и ЗС, создающей помехи',
-                  'Потери помехи в свободном пространстве',
-                  'Отношение несущая/помеха на линии вверх',
-                  'Отношение помеха/шум на линии вверх',
-                  'Отношение несущая/(шум+помеха) на линии вверх']
+        oLabels = ['Расстояние между спутником и ЗС, создающей помехи, км',
+                   'Потери помехи в свободном пространстве, дБ',
+                   'Отношение несущая/помеха на линии вверх, дБ',
+                   'Отношение помеха/шум на линии вверх, дБ',
+                   'Отношение несущая/(шум+помеха) на линии вверх, дБ']
         for i in range(5):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column=0, row=i+4, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_outputs, text=oDescs[i])
-            desc.grid(column=2, row=i+4, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_outputs, width=10)
             self.upOEntries.append(entry)
             self.upOEntries[i+4].grid(column=1, row=i+4, sticky=W)
@@ -72,55 +67,48 @@ class CI(CN):
 
     def downInputs(self):
         CN.downInputs(self)
-        iLabels = ['p1\', Вт', 'g1\'(\u03D5), дБ', 'B\', МГц',
-                   'g2\'(\u03D5), дБ', 'OL\', \u00b0 в.д.']
-        iDescs = ['Мощность передатчика спутника, создающего помехи',
-                  'КУ антенны спутника, создающего помехи, в направлении ЗС',
-                  'Ширина полосы помехи',
-                  'Внеосевой КУ антенны ЗС в напр. спутника, созд. помехи',
-                  'Долгота спутника, создающего помехи']
+        iLabels = ['Мощность передатчика спутника, создающего помехи, Вт',
+                   'КУ антенны спутника, создающего помехи, в направлении ЗС, дБ',
+                   'Ширина полосы помехи, МГц',
+                   'Внеосевой КУ антенны ЗС в напр. спутника, созд. помехи, дБ',
+                   'Долгота спутника, создающего помехи, \u00b0 в.д.']
         values = ['130', '30', '1', '25', '60']
         for i in range(5):
             label = ttk.Label(self.frame_inputs, text=iLabels[i])
-            label.grid(column=0, row=i+9, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_inputs, text=iDescs[i])
-            desc.grid(column=2, row=i+9, sticky=W, padx=5)
+            label.grid(column=0, row=i+8, sticky=E, padx=5)
             entry = ttk.Entry(self.frame_inputs, width=10)
             self.downIEntries.append(entry)
-            self.downIEntries[i+9].grid(column=1, row=i+9, sticky=W)
-            self.downIEntries[i+9].insert(0, values[i])
+            self.downIEntries[i+8].grid(column=1, row=i+8, sticky=W)
+            self.downIEntries[i+8].insert(0, values[i])
 
     def downOutputs(self):
         CN.downOutputs(self)
-        oLabels = ['d\', км', 'ls\', дБ', 'C/Idown, дБ', 'I/Ndown, дБ', 'C/(N+I)down, дБ']
-        oDescs = ['Расстояние между спутником, создающим помехи, и ЗС',
-                  'Потери помехи в свободном пространстве',
-                  'Отношение несущая/помеха на линии вниз',
-                  'Отношение помеха/шум на линии вниз',
-                  'Отношение несущая/(шум+помеха) на линии вниз']
+        oLabels = ['Расстояние между спутником, создающим помехи, и ЗС, км',
+                   'Потери помехи в свободном пространстве, дБ',
+                   'Отношение несущая/помеха на линии вниз, дБ',
+                   'Отношение помеха/шум на линии вниз, дБ',
+                   'Отношение несущая/(шум+помеха) на линии вниз, дБ']
         for i in range(5):
             label = ttk.Label(self.frame_outputs, text=oLabels[i])
             label.grid(column=0, row=i+4, sticky=E, padx=5)
-            desc = ttk.Label(self.frame_outputs, text=oDescs[i])
-            desc.grid(column=2, row=i+4, sticky=W, padx=5)
             entry = ttk.Entry(self.frame_outputs, width=10)
             self.downOEntries.append(entry)
             self.downOEntries[i+4].grid(column=1, row=i+4, sticky=W)
 
     def downProcess(self, event):
         CN.downProcess(self, event)
-        p1i = float(self.downIEntries[9].get())
-        g1i = float(self.downIEntries[10].get())
-        bi = float(self.downIEntries[11].get())
-        g2i = float(self.downIEntries[12].get())
-        satLongi = float(self.downIEntries[13].get())
+        p1i = float(self.downIEntries[8].get())
+        g1i = float(self.downIEntries[9].get())
+        bi = float(self.downIEntries[10].get())
+        g2i = float(self.downIEntries[11].get())
+        satLongi = float(self.downIEntries[12].get())
 
         disti = 42644 * (1 - 0.2954 * cos(radians(self.esLat)) *
                               cos(radians(abs(self.esLong - satLongi)))) ** 0.5
         lsi = 32.4 + 20 * log10(self.freq) + 20 * log10(disti)
-        C = 10 * log10(self.p1) - 10 * log10(self.b * 10 ** 6) + self.g1 + self.g2 - self.ls
-        I = 10 * log10(p1i) - 10 * log10(bi * 10 ** 6) + g1i + g2i - lsi
-        N =  10 * log10(1.38 * 10 ** -23) + 10 * log10(self.te)
+        C = self.eirp - 10 * log10(self.b * 10 ** 6) + self.g2 - self.ls
+        I = 10 * log10(p1i) + g1i - 10 * log10(bi * 10 ** 6) + g2i - lsi
+        N = 10 * log10(1.38 * 10 ** -23) + 10 * log10(self.te)
         NpI = 10*log10(10**(N/10) + 10**(I/10))
         self.CIDown = C - I
         self.INDown = I - N
@@ -141,28 +129,28 @@ class CI(CN):
         CN.totalWidgets(self)
 
         self.CITEntry = ttk.Entry(self.total, width=10)
-        self.CITEntry.grid(column=0, row=2, sticky=W)
+        self.CITEntry.grid(column=1, row=2, sticky=W)
 
         self.INTEntry = ttk.Entry(self.total, width=10)
-        self.INTEntry.grid(column=0, row=3, sticky=W)
+        self.INTEntry.grid(column=1, row=3, sticky=W)
 
         self.CNITEntry = ttk.Entry(self.total, width=10)
-        self.CNITEntry.grid(column=0, row=4, sticky=W)
+        self.CNITEntry.grid(column=1, row=4, sticky=W)
 
-        desc1 = 'Рассчитать суммарные C/N, C/I,\n I/N и C/N+I'
+        desc1 = 'Рассчитать суммарные \n C/N, C/I, I/N и C/N+I'
         self.button_calculate.config(text=desc1)
 
         desc2 = 'Суммарное C/I, дБ'
         label = ttk.Label(self.total, text=desc2)
-        label.grid(column=1, row=2, sticky=W)
+        label.grid(column=0, row=2, sticky=E, padx=5)
 
         desc3 = 'Суммарное I/N, дБ'
         label = ttk.Label(self.total, text=desc3)
-        label.grid(column=1, row=3, sticky=W)
+        label.grid(column=0, row=3, sticky=E, padx=5)
 
         desc4 = 'Суммарное C/N+I, дБ'
         label = ttk.Label(self.total, text=desc4)
-        label.grid(column=1, row=4, sticky=W)
+        label.grid(column=0, row=4, sticky=E, padx=5)
 
     def totalProcess(self, event):
         CN.totalProcess(self, event)

@@ -27,7 +27,6 @@ class EIRP:
         self.root.entry_txpower = \
             ttk.Entry(self.root.frame_inputs, width=10,
                       textvariable=self.root.txpower, validate='all')
-                      # , validatecommand=(Rec.vcmd, '%P'))
         self.root.entry_txpower.grid(column=1, row=2, sticky=W)
         self.root.entry_txpower.insert(0, '2')
 
